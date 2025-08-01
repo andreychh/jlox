@@ -1,11 +1,9 @@
 name: xcop
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
   pull_request:
-    branches:
-      - main
+    branches: [ main ]
 jobs:
   xcop:
     timeout-minutes: 15

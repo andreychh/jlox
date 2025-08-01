@@ -1,11 +1,9 @@
 name: markdownlint
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
   pull_request:
-    branches:
-      - main
+    branches: [ main ]
 jobs:
   markdownlint:
     timeout-minutes: 15
