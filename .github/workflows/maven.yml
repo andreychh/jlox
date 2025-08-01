@@ -11,9 +11,9 @@ jobs:
         os: [ ubuntu-24.04, windows-2022 ]
         include:
           - os: ubuntu-24.04
-            mvnw: "./mvnw"
+            mvn: "./mvnw"
           - os: windows-2022
-            mvnw: "./mvnw.cmd"
+            mvn: "./mvnw.cmd"
     timeout-minutes: 15
     runs-on: ${{ matrix.os }}
     steps:
@@ -24,4 +24,4 @@ jobs:
           distribution: temurin
           cache: maven
       - name: Verify
-        run: ${{ matrix.mvnw }} clean verify
+        run: ${{ matrix.mvn }} clean verify
