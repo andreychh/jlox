@@ -1,7 +1,9 @@
-package com.andreychh.lox.lexing;
+package com.andreychh.lox.lexing.state;
 
 
 import com.andreychh.lox.Source;
+import com.andreychh.lox.lexing.LexingResult;
+import com.andreychh.lox.lexing.LexingStep;
 import com.andreychh.lox.token.TokenFromLexeme;
 
 public final class SlashState implements LexingState {

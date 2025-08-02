@@ -1,6 +1,8 @@
 package com.andreychh.lox.lexing;
 
 import com.andreychh.lox.Source;
+import com.andreychh.lox.lexing.state.InitialState;
+import com.andreychh.lox.lexing.state.LexingState;
 
 public final class LexingFSM {
     private final Source source;

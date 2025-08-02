@@ -1,7 +1,9 @@
-package com.andreychh.lox.lexing;
+package com.andreychh.lox.lexing.state;
 
 
 import com.andreychh.lox.Source;
+import com.andreychh.lox.lexing.LexingResult;
+import com.andreychh.lox.lexing.LexingStep;
 import com.andreychh.lox.token.Token;
 import com.andreychh.lox.token.TokenFromLexeme;
 
@@ -30,7 +32,7 @@ public final class InitialState implements LexingState {
                 Token token = new TokenFromLexeme("" + character, this.source.position());
                 yield new InitialState(this.source.skip(1), this.result.withToken(token));
             }
-            case '!', '=', '>', '<' -> new OperatorState(this.source, this.result);
+            case '!', '=', '>', '<' -> new CompoundOperatorState(this.source, this.result);
             case '/' -> new SlashState(this.source, this.result);
             case '"' -> new StringState(this.source, this.result);
             default -> throw new IllegalStateException(

@@ -31,4 +31,12 @@ public final class LexingResult {
         errors.add(error);
         return new LexingResult(this.tokens, errors);
     }
+
+    public Iterable<Token> tokens() {
+        return this.tokens;
+    }
+
+    public Iterable<Error> errors() {
+        return this.errors;
+    }
 }

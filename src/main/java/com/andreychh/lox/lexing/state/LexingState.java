@@ -1,5 +1,8 @@
-package com.andreychh.lox.lexing;
+package com.andreychh.lox.lexing.state;
 
+
+import com.andreychh.lox.lexing.LexingResult;
+import com.andreychh.lox.lexing.LexingStep;
 
 /**
  * Represents a state in the Lexing Finite State Machine (FSM).

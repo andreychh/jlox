@@ -1,5 +1,7 @@
 package com.andreychh.lox.lexing;
 
+import com.andreychh.lox.lexing.state.LexingState;
+
 /**
  * Represents the result of a state transition in the FSM.
  *
