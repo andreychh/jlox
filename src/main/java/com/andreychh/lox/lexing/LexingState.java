@@ -8,13 +8,13 @@ public interface LexingState {
     /**
      * Processes the current state and returns a transition, which contains
      * the next state and a flag indicating if the process should stop.
-     * <p>
-     * todo: rename
      */
-    Transition process();
+    LexingStep next();
 
     /**
      * Returns the result of the computation accumulated up to this state.
+     * <p/>
+     * todo: rename
      */
-    LexingResult collect();
+    LexingResult collectResult();
 }

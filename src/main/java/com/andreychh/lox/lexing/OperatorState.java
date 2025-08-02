@@ -1,37 +1,35 @@
 package com.andreychh.lox.lexing;
 
 import com.andreychh.lox.Source;
-import com.andreychh.lox.Tokens;
 import com.andreychh.lox.token.Token;
 import com.andreychh.lox.token.TokenFromLexeme;
 
 public final class OperatorState implements LexingState {
-
-    private final Tokens tokens;
     private final Source source;
+    private final LexingResult result;
 
-    public OperatorState(final Tokens tokens, final Source source) {
-        this.tokens = tokens;
+    public OperatorState(final Source source, final LexingResult result) {
         this.source = source;
+        this.result = result;
     }
 
     @Override
-    public Transition process() {
+    public LexingStep next() {
         LexingState state = switch (this.source.peek(1)) {
             case '=' -> {
                 Token token = new TokenFromLexeme(this.source.take(2), this.source.position());
-                yield new InitialState(this.tokens.withToken(token), this.source.skip(2));
+                yield new InitialState(this.source.skip(2), this.result.withToken(token));
             }
             default -> {
                 Token token = new TokenFromLexeme(this.source.take(1), this.source.position());
-                yield new InitialState(this.tokens.withToken(token), this.source.skip(1));
+                yield new InitialState(this.source.skip(1), this.result.withToken(token));
             }
         };
-        return new Transition(state, false);
+        return new LexingStep(state, false);
     }
 
     @Override
-    public LexingResult collect() {
-        return new LexingResult(this.tokens);
+    public LexingResult collectResult() {
+        return this.result;
     }
 }

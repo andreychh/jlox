@@ -1,28 +1,29 @@
 package com.andreychh.lox.lexing;
 
 import com.andreychh.lox.Source;
-import com.andreychh.lox.Tokens;
 
 public final class LexingFSM {
+    private final Source source;
+
+    public LexingFSM(final Source source) {
+        this.source = source;
+    }
+
     /**
      * Runs the state machine to tokenize the given source code.
      *
-     * @param source The source code to scan.
-     * @return A {@code LexerResult} containing the list of tokens and any
+     * @return A {@code LexingResult} containing the list of tokens and any
      * errors found.
      */
-    public LexingResult run(final Source source) {
-        LexingState state = new InitialState(new Tokens(), source);
-
+    public LexingResult tokenize() {
+        LexingState state = new InitialState(this.source);
         while (true) {
-            Transition transition = state.process();
-            state = transition.state();
-
-            if (transition.isFinal()) {
+            final LexingStep step = state.next();
+            if (step.isFinal()) {
                 break;
             }
+            state = step.state();
         }
-
-        return state.collect();
+        return state.collectResult();
     }
 }

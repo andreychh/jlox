@@ -2,35 +2,34 @@ package com.andreychh.lox.lexing;
 
 
 import com.andreychh.lox.Source;
-import com.andreychh.lox.Tokens;
 import com.andreychh.lox.token.TokenFromLexeme;
 
 public final class SlashState implements LexingState {
-    private final Tokens tokens;
     private final Source source;
+    private final LexingResult result;
 
-    public SlashState(final Tokens tokens, final Source source) {
-        this.tokens = tokens;
+    public SlashState(final Source source, final LexingResult result) {
         this.source = source;
+        this.result = result;
     }
 
     @Override
-    public Transition process() {
+    public LexingStep next() {
         LexingState state = switch (this.source.peek(1)) {
             case '/' -> new InitialState(
-                    this.tokens,
-                    this.source.skip(2).skipWhile(c -> c != '\n')
+                    this.source.skip(2).skipWhile(c -> c != '\n'),
+                    this.result
             );
             default -> new InitialState(
-                    this.tokens.withToken(new TokenFromLexeme("/", this.source.position())),
-                    this.source.skip(1)
+                    this.source.skip(1),
+                    this.result.withToken(new TokenFromLexeme("/", this.source.position()))
             );
         };
-        return new Transition(state, false);
+        return new LexingStep(state, false);
     }
 
     @Override
-    public LexingResult collect() {
-        return null;
+    public LexingResult collectResult() {
+        return this.result;
     }
 }
