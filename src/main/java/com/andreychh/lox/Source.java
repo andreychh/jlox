@@ -25,6 +25,10 @@ public final class Source {
         return position >= 0 && position < this.text.length();
     }
 
+    public String take(final int count) {
+        return this.text.substring(this.offset, this.offset + count);
+    }
+
     public Source skip(final int offset) {
         return new Source(this.text, this.offset + offset);
     }

@@ -1,26 +1,20 @@
 package com.andreychh.lox.lexing;
 
 
-import com.andreychh.lox.Tokens;
-
 /**
  * Represents a state in the Lexing Finite State Machine (FSM).
  */
 public interface LexingState {
     /**
-     * Processes the current state and returns the next state in the machine.
+     * Processes the current state and returns a transition, which contains
+     * the next state and a flag indicating if the process should stop.
+     * <p>
+     * todo: rename
      */
-    LexingState process();
+    Transition process();
 
     /**
-     * Checks if the state is a terminal one, signaling that the process should stop.
-     *
-     * @return true if this is a terminal state, false otherwise.
+     * Returns the result of the computation accumulated up to this state.
      */
-    boolean isTerminal();
-
-    /**
-     * Returns the collection of tokens accumulated up to this state.
-     */
-    Tokens tokens();
+    LexingResult collect();
 }

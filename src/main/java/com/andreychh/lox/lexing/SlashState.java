@@ -1,9 +1,9 @@
 package com.andreychh.lox.lexing;
 
+
 import com.andreychh.lox.Source;
-import com.andreychh.lox.SimpleToken;
-import com.andreychh.lox.TokenType;
 import com.andreychh.lox.Tokens;
+import com.andreychh.lox.token.TokenFromLexeme;
 
 public final class SlashState implements LexingState {
     private final Tokens tokens;
@@ -15,27 +15,22 @@ public final class SlashState implements LexingState {
     }
 
     @Override
-    public LexingState process() {
-        char character = this.source.peek(1);
-        return switch (character) {
+    public Transition process() {
+        LexingState state = switch (this.source.peek(1)) {
             case '/' -> new InitialState(
                     this.tokens,
                     this.source.skip(2).skipWhile(c -> c != '\n')
             );
             default -> new InitialState(
-                    this.tokens.withToken(new SimpleToken(TokenType.SLASH, "/", this.source.position())),
+                    this.tokens.withToken(new TokenFromLexeme("/", this.source.position())),
                     this.source.skip(1)
             );
         };
+        return new Transition(state, false);
     }
 
     @Override
-    public boolean isTerminal() {
-        return false;
-    }
-
-    @Override
-    public Tokens tokens() {
-        return this.tokens;
+    public LexingResult collect() {
+        return null;
     }
 }

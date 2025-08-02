@@ -16,17 +16,12 @@ public final class FinalState implements LexingState {
     }
 
     @Override
-    public LexingState process() {
+    public Transition process() {
         throw new UnsupportedOperationException("Cannot process a final state.");
     }
 
     @Override
-    public boolean isTerminal() {
-        return true;
-    }
-
-    @Override
-    public Tokens tokens() {
-        return this.tokens.withToken(new SimpleToken(TokenType.EOF, "", this.source.position()));
+    public LexingResult collect() {
+        return new LexingResult(this.tokens);
     }
 }

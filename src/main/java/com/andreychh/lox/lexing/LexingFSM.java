@@ -11,13 +11,18 @@ public final class LexingFSM {
      * @return A {@code LexerResult} containing the list of tokens and any
      * errors found.
      */
-    public Tokens run(final Source source) {
+    public LexingResult run(final Source source) {
         LexingState state = new InitialState(new Tokens(), source);
 
-        while (!state.isTerminal()) {
-            state = state.process();
+        while (true) {
+            Transition transition = state.process();
+            state = transition.state();
+
+            if (transition.isFinal()) {
+                break;
+            }
         }
 
-        return state.tokens();
+        return state.collect();
     }
 }

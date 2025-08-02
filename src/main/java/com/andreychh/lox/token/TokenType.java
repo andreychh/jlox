@@ -1,4 +1,4 @@
-package com.andreychh.lox;
+package com.andreychh.lox.token;
 
 public enum TokenType {
     // Single-character tokens.

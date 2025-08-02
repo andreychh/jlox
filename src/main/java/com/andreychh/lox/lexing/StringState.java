@@ -1,9 +1,11 @@
 package com.andreychh.lox.lexing;
 
+
 import com.andreychh.lox.Source;
-import com.andreychh.lox.SimpleToken;
-import com.andreychh.lox.TokenType;
 import com.andreychh.lox.Tokens;
+import com.andreychh.lox.token.SimpleToken;
+import com.andreychh.lox.token.Token;
+import com.andreychh.lox.token.TokenType;
 
 public final class StringState implements LexingState {
     private final Tokens tokens;
@@ -15,23 +17,15 @@ public final class StringState implements LexingState {
     }
 
     @Override
-    public LexingState process() {
+    public Transition process() {
         Source source = this.source.skip(1).skipWhile(c -> c != '"').skip(1);
-        return new InitialState(
-                this.tokens.withToken(
-                        new SimpleToken(TokenType.STRING, source.sliceUntil(this.source), this.source.position())
-                ),
-                source
-        );
+        Token token = new SimpleToken(TokenType.STRING, source.sliceUntil(this.source), this.source.position());
+        LexingState state = new InitialState(this.tokens.withToken(token), source);
+        return new Transition(state, false);
     }
 
     @Override
-    public boolean isTerminal() {
-        return false;
-    }
-
-    @Override
-    public Tokens tokens() {
-        return this.tokens;
+    public LexingResult collect() {
+        return new LexingResult(this.tokens);
     }
 }

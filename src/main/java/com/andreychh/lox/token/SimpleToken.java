@@ -1,4 +1,6 @@
-package com.andreychh.lox;
+package com.andreychh.lox.token;
+
+import com.andreychh.lox.Position;
 
 public final class SimpleToken implements Token {
     private final TokenType type;
