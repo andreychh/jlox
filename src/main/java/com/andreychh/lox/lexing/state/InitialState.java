@@ -1,5 +1,6 @@
 package com.andreychh.lox.lexing.state;
 
+import com.andreychh.lox.Error;
 import com.andreychh.lox.Source;
 import com.andreychh.lox.lexing.LexingResult;
 import com.andreychh.lox.lexing.LexingStep;
@@ -57,9 +58,10 @@ public final class InitialState implements LexingState {
                 yield new InitialState(this.source.skip(1), this.result.withToken(token));
             }
             case '!', '=', '>', '<' -> new CompoundOperatorState(this.source, this.result);
-            default -> throw new IllegalStateException(
-                    "Unexpected character '" + character + "' at position " + this.source.position()
-            );
+            default -> {
+                Error error = new Error("Unexpected character '%s'.".formatted(character), this.source.position());
+                yield new InitialState(this.source.skip(1), this.result.withError(error));
+            }
         };
         return new LexingStep(state, false);
     }

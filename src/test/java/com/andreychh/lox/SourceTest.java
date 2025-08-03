@@ -6,9 +6,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.function.Predicate;
 
-public class SourceTest {
+class SourceTest {
     @Test
-    public void testPeek() {
+    void testPeek() {
         Source source = new Source("hello world");
 
         assertEquals('h', source.peek(0));
@@ -20,14 +20,14 @@ public class SourceTest {
     }
 
     @Test
-    public void testPeekEmptySource() {
+    void testPeekEmptySource() {
         Source emptySource = new Source("");
 
         assertThrows(IndexOutOfBoundsException.class, () -> emptySource.peek(0));
     }
 
     @Test
-    public void testCanPeek() {
+    void testCanPeek() {
         Source source = new Source("hello world");
 
         assertTrue(source.canPeek(0));
@@ -37,7 +37,7 @@ public class SourceTest {
     }
 
     @Test
-    public void testCanPeekEmptySource() {
+    void testCanPeekEmptySource() {
         Source emptySource = new Source("");
 
         assertFalse(emptySource.canPeek(0));
@@ -45,7 +45,7 @@ public class SourceTest {
     }
 
     @Test
-    public void testTake() {
+    void testTake() {
         Source source = new Source("hello world");
 
         assertEquals("h", source.take(1));
@@ -56,7 +56,7 @@ public class SourceTest {
     }
 
     @Test
-    public void testTakeEmptySource() {
+    void testTakeEmptySource() {
         Source source = new Source("");
 
         assertEquals("", source.take(0));
@@ -64,7 +64,7 @@ public class SourceTest {
     }
 
     @Test
-    public void testCanTake() {
+    void testCanTake() {
         Source source = new Source("hello world");
 
         assertTrue(source.canTake(0));
@@ -74,7 +74,7 @@ public class SourceTest {
     }
 
     @Test
-    public void testCanTakeEmptySource() {
+    void testCanTakeEmptySource() {
         Source emptySource = new Source("");
 
         assertTrue(emptySource.canTake(0));
@@ -83,7 +83,7 @@ public class SourceTest {
     }
 
     @Test
-    public void testTakeWhile() {
+    void testTakeWhile() {
         Source source = new Source("hello world");
 
         Predicate<Character> isLetter = Character::isLetter;
@@ -100,7 +100,7 @@ public class SourceTest {
     }
 
     @Test
-    public void testSkip() {
+    void testSkip() {
         Source source = new Source("hello world");
 
         Source afterOne = source.skip(1);
@@ -119,7 +119,7 @@ public class SourceTest {
     }
 
     @Test
-    public void testSkipWhile() {
+    void testSkipWhile() {
         Source source = new Source("hello world");
 
         Predicate<Character> isLetter = Character::isLetter;
@@ -136,7 +136,7 @@ public class SourceTest {
     }
 
     @Test
-    public void testPosition() {
+    void testPosition() {
         Source source = new Source("line1\nline2\nline3");
 
         assertEquals(new Position(1, 1), source.position());
