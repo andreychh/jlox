@@ -1,5 +1,7 @@
 package com.andreychh.lox.token;
 
+import java.util.Objects;
+
 import com.andreychh.lox.Position;
 
 /**
@@ -32,5 +34,30 @@ public final class ExplicitToken implements Token {
     @Override
     public String format() {
         return "Token(%s, \"%s\", %s)".formatted(this.type, this.lexeme, this.position.format());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final ExplicitToken that = (ExplicitToken) o;
+        return this.type == that.type
+                && Objects.equals(this.lexeme, that.lexeme)
+                && Objects.equals(this.position, that.position);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.type, this.lexeme, this.position);
     }
 }

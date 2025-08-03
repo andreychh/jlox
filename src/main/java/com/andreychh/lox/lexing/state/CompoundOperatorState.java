@@ -37,17 +37,15 @@ public final class CompoundOperatorState implements LexingState {
      */
     @Override
     public LexingStep next() {
-        LexingState state = switch (this.source.peek(1)) {
-            case '=' -> {
-                Token token = new TokenFromLexeme(this.source.take(2), this.source.position());
-                yield new InitialState(this.source.skip(2), this.result.withToken(token));
-            }
-            default -> {
-                Token token = new TokenFromLexeme(this.source.take(1), this.source.position());
-                yield new InitialState(this.source.skip(1), this.result.withToken(token));
-            }
-        };
-        return new LexingStep(state, false);
+        if (this.source.canPeek(1) && this.source.peek(1) == '=') {
+            Token token = new TokenFromLexeme(this.source.take(2), this.source.position());
+            LexingState nextState = new InitialState(this.source.skip(2), this.result.withToken(token));
+            return new LexingStep(nextState, false);
+        } else {
+            Token token = new TokenFromLexeme(this.source.take(1), this.source.position());
+            LexingState nextState = new InitialState(this.source.skip(1), this.result.withToken(token));
+            return new LexingStep(nextState, false);
+        }
     }
 
     /**
