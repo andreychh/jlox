@@ -2,20 +2,41 @@ package com.andreychh.lox.token;
 
 import com.andreychh.lox.Position;
 
+/**
+ * A token implementation that infers its type from its lexeme.
+ * <p>
+ * This class automatically determines the token type based on the lexeme's
+ * textual content by matching against known keywords and operators.
+ */
 public final class TokenFromLexeme implements Token {
     private final String lexeme;
     private final Position position;
 
+    /**
+     * Creates a new token from a lexeme.
+     *
+     * @param lexeme   The token's textual representation in the source code
+     * @param position The token's position in the source code
+     */
     public TokenFromLexeme(final String lexeme, final Position position) {
         this.lexeme = lexeme;
         this.position = position;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String format() {
         return "Token(%s, \"%s\", %s)".formatted(this.type(), this.lexeme, this.position.format());
     }
 
+    /**
+     * Determines the token type based on the lexeme.
+     *
+     * @return The appropriate token type for this lexeme
+     * @throws RuntimeException if the lexeme does not match any known token type
+     */
     private TokenType type() {
         return switch (this.lexeme) {
             case "and" -> TokenType.AND;

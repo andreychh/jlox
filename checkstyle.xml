@@ -14,7 +14,7 @@
   </module>
   <!-- Separate check for comment length (80 characters) -->
   <module name="RegexpSingleline">
-    <property name="format" value="^\s*(/\*\*?|\*|//).{81,}"/>
+    <property name="format" value="^\s*(/\*\*?|\*|//).{79,}"/>
     <property name="message" value="Comment line is longer than 80 characters"/>
   </module>
   <!-- Files must end with newline -->
@@ -88,10 +88,6 @@
     <!-- Common checks -->
     <module name="EmptyStatement"/>
     <module name="EqualsHashCode"/>
-    <module name="HiddenField">
-      <property name="ignoreConstructorParameter" value="true"/>
-      <property name="ignoreSetter" value="true"/>
-    </module>
     <module name="IllegalInstantiation"/>
     <module name="InnerAssignment"/>
     <module name="MagicNumber">
@@ -103,12 +99,22 @@
     <module name="SimplifyBooleanExpression"/>
     <module name="SimplifyBooleanReturn"/>
     <!-- Class design -->
-    <module name="DesignForExtension"/>
     <module name="FinalClass"/>
-    <module name="HideUtilityClassConstructor"/>
+    <module name="Regexp">
+      <property name="format" value="^\s*private\s+(?!final\s)(?!static\s+final\s).*\s+\w+\s*[=;]"/>
+      <property name="message" value="Private fields must be declared final"/>
+      <property name="illegalPattern" value="true"/>
+    </module>
     <module name="InterfaceIsType"/>
     <module name="VisibilityModifier">
-      <property name="protectedAllowed" value="true"/>
+      <property name="packageAllowed" value="false"/>
+      <property name="protectedAllowed" value="false"/>
+    </module>
+    <!-- Require explicit this for field and method access -->
+    <module name="RequireThis">
+      <property name="checkFields" value="true"/>
+      <property name="checkMethods" value="true"/>
+      <property name="validateOnlyOverlapping" value="false"/>
     </module>
     <!-- Miscellaneous -->
     <module name="ArrayTypeStyle"/>
