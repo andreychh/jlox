@@ -15,19 +15,6 @@ import com.andreychh.lox.lexing.LexingResult;
  * <p>
  * This class serves as the primary interface for the Lox language interpreter.
  * It processes command-line arguments to determine the execution mode.
- *
- * <p><b>Running a script file:</b>
- * To execute a Lox script, provide the path to the file as an argument.
- * <pre>{@code
- * java com.andreychh.Main /path/to/script.lox
- * }</pre>
- *
- * <p><b>Running in REPL mode:</b>
- * To start an interactive Read-Eval-Print Loop (REPL), run the application
- * without any arguments.
- * <pre>{@code
- * java com.andreychh.Main
- * }</pre>
  */
 public final class Lox {
     private final String[] args;
@@ -62,8 +49,7 @@ public final class Lox {
      * the results until the program is terminated.
      */
     private void runREPL() {
-        try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in, Charset.defaultCharset()));
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in, Charset.defaultCharset()))) {
             while (true) {
                 System.out.print(">>> ");
                 String line = reader.readLine();
