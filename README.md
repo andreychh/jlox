@@ -50,6 +50,21 @@ Hello, world!
 42
 ```
 
+## Design Principles
+
+This implementation prioritizes:
+
+1. **Immutability**: Data structures are not modified after creation, making the system's data flow predictable.
+
+2. **Composition over Inheritance**: Behavior is assembled from independent components rather than being defined by
+   rigid class hierarchies.
+
+3. **No `null` References**: The code is designed to avoid `null` usage, preventing a common class of runtime errors.
+
+4. **No Reflection**: Logic relies on the static type system and polymorphism instead of runtime type checks.
+
+5. **No Global State**: Each major module is self-sufficient and does not depend on global state.
+
 ## Current Status
 
 - ✅ **Lexer**: FSM-based implementation
