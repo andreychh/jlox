@@ -42,7 +42,7 @@ Run jlox without arguments to enter interactive mode:
 
 In this mode, you can enter Lox expressions and immediately see the result of their execution:
 
-```
+```text
 >>> print "Hello, world!";
 Hello, world!
 >>> var x = 42;
