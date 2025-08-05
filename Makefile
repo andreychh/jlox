@@ -4,8 +4,10 @@ else
     OS_TYPE := $(shell uname -s)
 endif
 
-.DEFAULT_GOAL := script
-.PHONY: package script test validate clean
+.DEFAULT_GOAL := all
+.PHONY: all package script test validate clean
+
+all: script
 
 package:
 	@echo "--> Packaging jlox into an executable JAR..."
