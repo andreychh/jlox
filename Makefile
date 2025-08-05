@@ -5,15 +5,15 @@ else
 endif
 
 .DEFAULT_GOAL := all
-.PHONY: all package script clean test validate
+.PHONY: all package script test validate clean
 
-all: package script
+all: script
 
 package:
 	@echo "--> Packaging jlox into an executable JAR..."
 	./mvnw package
 
-script:
+script: package
 ifeq ($(OS_TYPE),Windows)
 	@echo "--> Creating runner for Windows: jlox.cmd"
 	@echo "@echo off" > jlox.cmd
