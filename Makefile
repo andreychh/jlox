@@ -4,16 +4,14 @@ else
     OS_TYPE := $(shell uname -s)
 endif
 
-.DEFAULT_GOAL := all
-.PHONY: all package script clean test validate
-
-all: package script
+.DEFAULT_GOAL := script
+.PHONY: package script test validate clean
 
 package:
 	@echo "--> Packaging jlox into an executable JAR..."
 	./mvnw package
 
-script:
+script: package
 ifeq ($(OS_TYPE),Windows)
 	@echo "--> Creating runner for Windows: jlox.cmd"
 	@echo "@echo off" > jlox.cmd
