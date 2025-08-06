@@ -5,8 +5,7 @@ import java.util.Objects;
 /**
  * Represents a position in the source code.
  * <p>
- * This class encapsulates line and column information to precisely locate
- * tokens and errors in the source text.
+ * This class encapsulates line and column information to precisely locate tokens and errors in the source text.
  */
 public final class Position {
     private final int line;
@@ -21,6 +20,24 @@ public final class Position {
     public Position(final int line, final int column) {
         this.line = line;
         this.column = column;
+    }
+
+    /**
+     * Creates a new position instance representing the start of the next line.
+     *
+     * @return A new {@code Position} with an incremented line number and column reset to 1.
+     */
+    public Position addLine() {
+        return new Position(this.line + 1, 1);
+    }
+
+    /**
+     * Creates a new position instance representing the next column on the same line.
+     *
+     * @return A new {@code Position} with an incremented column number.
+     */
+    public Position addColumn() {
+        return new Position(this.line, this.column + 1);
     }
 
     /**
