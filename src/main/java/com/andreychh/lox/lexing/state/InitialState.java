@@ -56,6 +56,7 @@ public final class InitialState implements LexingState {
             }
             case '!', '=', '>', '<' -> new CompoundOperatorState(this.source, this.result);
             case '/' -> new SlashState(this.source, this.result);
+            case '"' -> new StringState(this.source, this.result);
             default -> {
                 Error error = new Error("Unexpected character '%s'.".formatted(character), this.source.position());
                 yield new InitialState(this.source.skip(1), this.result.withError(error));
