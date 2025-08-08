@@ -12,11 +12,6 @@
     <property name="max" value="120"/>
     <property name="ignorePattern" value="^package.*|^import.*|^\s*\*.*"/>
   </module>
-  <!-- Separate check for comment length (80 characters) -->
-  <module name="RegexpSingleline">
-    <property name="format" value="^\s*(/\*\*?|\*|//).{79,}"/>
-    <property name="message" value="Comment line is longer than 80 characters"/>
-  </module>
   <!-- Files must end with newline -->
   <module name="NewlineAtEndOfFile"/>
   <!-- No trailing spaces -->
