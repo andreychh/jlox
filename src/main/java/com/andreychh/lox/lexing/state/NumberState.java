@@ -14,15 +14,15 @@ import com.andreychh.lox.token.TokenType;
  * {@snippet :
  * // Creates a number token for "123"
  * NumberState state = new NumberState(new Source("123"), new LexingResult());
- * LexingStep step = state.next(); // Returns number token
+ * LexingStep step = state.next(); // Returns NUMBER token
  *
  * // Creates a number token for "123.45"
  * NumberState decimalState = new NumberState(new Source("123.45"), new LexingResult());
- * LexingStep decimalStep = decimalState.next(); // Returns number token
+ * LexingStep decimalStep = decimalState.next(); // Returns NUMBER token
  *
  * // Creates a number token for "42.0"
  * NumberState zeroDecimalState = new NumberState(new Source("42.0"), new LexingResult());
- * LexingStep zeroStep = zeroDecimalState.next(); // Returns number token
+ * LexingStep zeroStep = zeroDecimalState.next(); // Returns NUMBER token
  *}
  */
 public final class NumberState implements LexingState {

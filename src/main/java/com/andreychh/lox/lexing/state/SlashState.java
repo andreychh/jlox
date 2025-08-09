@@ -11,9 +11,9 @@ import com.andreychh.lox.token.TokenFromLexeme;
  * This state is entered when a '/' character is encountered in the source code.
  * <p>
  * {@snippet :
- * // Creates a division token for "/"
+ * // Creates a slash token for "/"
  * SlashState state = new SlashState(new Source("/"), new LexingResult());
- * LexingStep step = state.next(); // Returns division token
+ * LexingStep step = state.next(); // Returns SLASH token
  *
  * // Skips line comment for "//"
  * SlashState commentState = new SlashState(new Source("//comment"), new LexingResult());
