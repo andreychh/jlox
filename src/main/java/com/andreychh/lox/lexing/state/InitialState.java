@@ -58,6 +58,12 @@ public final class InitialState implements LexingState {
             case '/' -> new SlashState(this.source, this.result);
             case '"' -> new StringState(this.source, this.result);
             case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' -> new NumberState(this.source, this.result);
+            case '_', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i',
+                 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's',
+                 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C',
+                 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
+                 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W',
+                 'X', 'Y', 'Z' -> new IdentifierState(this.source, this.result);
             default -> {
                 Error error = new Error("Unexpected character '%s'.".formatted(character), this.source.position());
                 yield new InitialState(this.source.skip(1), this.result.withError(error));
