@@ -14,9 +14,9 @@ import com.andreychh.lox.token.TokenType;
  * This state is entered when a '"' character is encountered in the source code.
  * <p>
  * {@snippet :
- * // Creates a string token for "\"hello\""
+ * // Creates a string token for "hello"
  * StringState state = new StringState(new Source("\"hello\""), new LexingResult());
- * LexingStep step = state.next(); // Returns string token
+ * LexingStep step = state.next(); // Returns STRING token
  *
  * // Handles unterminated string
  * StringState unterminatedState = new StringState(new Source("\"hello"), new LexingResult());
