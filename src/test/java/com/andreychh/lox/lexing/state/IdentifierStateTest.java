@@ -6,6 +6,11 @@ import com.andreychh.lox.lexing.LexingResult;
 import com.andreychh.lox.token.ExplicitToken;
 import com.andreychh.lox.token.TokenType;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -13,18 +18,19 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * Tests for {@link IdentifierState}.
  */
 class IdentifierStateTest {
-    @Test
-    void recognizesVarKeyword() {
+    @ParameterizedTest
+    @MethodSource("keywordToTokenType")
+    void recognizesKeyword(String keyword, TokenType type) {
         assertEquals(
-                new ExplicitToken(TokenType.VAR, "var", new Position(1, 1)),
-                new IdentifierState(new Source("var"), new LexingResult())
+                new ExplicitToken(type, keyword, new Position(1, 1)),
+                new IdentifierState(new Source(keyword), new LexingResult())
                         .next()
                         .state()
                         .collectResult()
                         .tokens()
                         .iterator()
                         .next(),
-                "IdentifierState failed to recognize 'var' as a keyword token"
+                "IdentifierState failed to recognize '%s' as %s token".formatted(keyword, type)
         );
     }
 
@@ -115,6 +121,27 @@ class IdentifierStateTest {
                         .iterator()
                         .next(),
                 "IdentifierState incorrectly recognized capitalized 'Variable' as keyword instead of identifier"
+        );
+    }
+
+    private static Stream<Arguments> keywordToTokenType() {
+        return Stream.of(
+                Arguments.of("and", TokenType.AND),
+                Arguments.of("class", TokenType.CLASS),
+                Arguments.of("else", TokenType.ELSE),
+                Arguments.of("false", TokenType.FALSE),
+                Arguments.of("for", TokenType.FOR),
+                Arguments.of("fun", TokenType.FUN),
+                Arguments.of("if", TokenType.IF),
+                Arguments.of("nil", TokenType.NIL),
+                Arguments.of("or", TokenType.OR),
+                Arguments.of("print", TokenType.PRINT),
+                Arguments.of("return", TokenType.RETURN),
+                Arguments.of("super", TokenType.SUPER),
+                Arguments.of("this", TokenType.THIS),
+                Arguments.of("true", TokenType.TRUE),
+                Arguments.of("var", TokenType.VAR),
+                Arguments.of("while", TokenType.WHILE)
         );
     }
 }
