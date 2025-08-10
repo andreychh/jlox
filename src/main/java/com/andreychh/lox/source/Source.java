@@ -3,38 +3,63 @@ package com.andreychh.lox.source;
 import com.andreychh.lox.Position;
 
 /**
- * An immutable stream of characters for lexical analysis. Defines the essential contract for consuming a source
- * character by character.
+ * Source represents a stream of characters with position tracking and fragment extraction.
+ * <p>
+ * This interface provides immutable operations for navigating and extracting content from character streams,
+ * maintaining position information for error reporting and debugging.
+ * <p>
+ * {@snippet :
+ * // Basic usage
+ * Source input = new TextSource("hello world");
+ * String firstChar = input.peek(0);  // "h"
+ * String fifthChar = input.peek(4);  // "o"
+ *
+ * // Fragment extraction
+ * Fragment fragment = input.take(5);  // value="hello", remaining=" world"
+ * Source remaining = fragment.remaining();
+ *
+ * // Position tracking
+ * Source multiline = new TextSource("line1\nline2");
+ * Position pos = multiline.skip(6).position();  // Position(2, 1)
+ *}
  */
 public interface Source {
     /**
-     * Looks at the current character without consuming it.
+     * Checks if there are at least {@code count} characters remaining in the source.
      *
-     * @return The character at the current position.
-     * @throws IllegalStateException If the source has no more characters, providing context about the position of the
-     *                               error.
+     * @param count The number of characters to check for.
+     * @return {@code true} if there are enough characters, {@code false} otherwise.
      */
-    char peek();
+    boolean hasNext(int count);
 
     /**
-     * Checks if there are more characters to consume.
+     * Peeks at the character at the specified offset from the current position.
      *
-     * @return {@code true} if the source has more characters, {@code false} otherwise.
+     * @param offset The offset from the current position.
+     * @return The character at the given offset as a String.
      */
-    boolean hasNext();
+    String peek(int offset);
 
     /**
-     * Consumes the current character and returns the next state of the source.
+     * Takes a fragment of the specified length from the source.
      *
-     * @return A new {@link Source} instance advanced by one character.
-     * @throws IllegalStateException If the source has no more characters.
+     * @param count The number of characters to take.
+     * @return A Fragment containing the taken value and the remaining Source.
      */
-    Source next();
+    Fragment take(int count);
 
     /**
-     * Returns the current position (line and column) in the source.
+     * Skips the specified number of characters in the source.
      *
-     * @return The current {@link Position}.
+     * @param count The number of characters to skip.
+     * @return The Source after skipping the characters.
+     */
+    Source skip(int count);
+
+    /**
+     * Returns the current position in the source.
+     *
+     * @return The Position object representing the current line and column.
      */
     Position position();
 }
