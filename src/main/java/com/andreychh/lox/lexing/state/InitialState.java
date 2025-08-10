@@ -10,10 +10,8 @@ import com.andreychh.lox.token.TokenFromLexeme;
 /**
  * The initial state of the lexical analysis process.
  * <p>
- * This state is responsible for examining the next character in the source
- * and transitioning to the appropriate specialized state based on the
- * character.
- * It directly handles simple single-character tokens and whitespace.
+ * This state is responsible for examining the next character in the source and transitioning to the appropriate
+ * specialized state based on the character. It directly handles simple single-character tokens and whitespace.
  */
 public final class InitialState implements LexingState {
     private final Source source;
@@ -42,8 +40,7 @@ public final class InitialState implements LexingState {
     /**
      * {@inheritDoc}
      * <p>
-     * Examines the next character and transitions to the appropriate state or
-     * directly handles simple tokens.
+     * Examines the next character and transitions to the appropriate state or directly handles simple tokens.
      */
     @Override
     public LexingStep next() {
@@ -58,6 +55,15 @@ public final class InitialState implements LexingState {
                 yield new InitialState(this.source.skip(1), this.result.withToken(token));
             }
             case '!', '=', '>', '<' -> new CompoundOperatorState(this.source, this.result);
+            case '/' -> new SlashState(this.source, this.result);
+            case '"' -> new StringState(this.source, this.result);
+            case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' -> new NumberState(this.source, this.result);
+            case '_', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i',
+                 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's',
+                 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C',
+                 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
+                 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W',
+                 'X', 'Y', 'Z' -> new IdentifierState(this.source, this.result);
             default -> {
                 Error error = new Error("Unexpected character '%s'.".formatted(character), this.source.position());
                 yield new InitialState(this.source.skip(1), this.result.withError(error));
