@@ -1,15 +1,17 @@
 package com.andreychh.lox.lexing.state;
 
 import com.andreychh.lox.Error;
-import com.andreychh.lox.Source;
 import com.andreychh.lox.lexing.LexingResult;
 import com.andreychh.lox.lexing.LexingStep;
+import com.andreychh.lox.source.Fragment;
+import com.andreychh.lox.source.PatternSource;
+import com.andreychh.lox.source.Source;
 import com.andreychh.lox.token.ExplicitToken;
 import com.andreychh.lox.token.Token;
 import com.andreychh.lox.token.TokenType;
 
 /**
- * A lexing state for processing string literals.
+ * Represents a lexing state for processing string literals.
  * <p>
  * This state is entered when a '"' character is encountered in the source code.
  * <p>
@@ -22,6 +24,8 @@ import com.andreychh.lox.token.TokenType;
  * StringState unterminatedState = new StringState(new Source("\"hello"), new LexingResult());
  * LexingStep errorStep = unterminatedState.next(); // Returns error for unterminated string
  *}
+ *
+ * @apiNote The state that creates {@code StringState} must guarantee that {@code source.take(1)} returns {@code "\""}.
  */
 public final class StringState implements LexingState {
     private final Source source;
@@ -46,14 +50,14 @@ public final class StringState implements LexingState {
      */
     @Override
     public LexingStep next() {
-        String lexeme = "\"%s\"".formatted(this.source.skip(1).takeWhile(c -> c != '"'));
-        Source source = this.source.skip(1).skipWhile(c -> c != '"');
-        if (!source.canPeek(0)) {
+        Fragment taken = new PatternSource(this.source.skip(1)).take("[^\"]");
+        if (!taken.remaining().hasNext(1)) {
             Error error = new Error("Unterminated string literal", this.source.position());
-            return new LexingStep(new EOFState(source, this.result.withError(error)), false);
+            LexingState state = new EOFState(taken.remaining(), this.result.withError(error));
+            return new LexingStep(state, false);
         }
-        Token token = new ExplicitToken(TokenType.STRING, lexeme, this.source.position());
-        LexingState state = new InitialState(source.skip(1), this.result.withToken(token));
+        Token token = new ExplicitToken(TokenType.STRING, "\"%s\"".formatted(taken.value()), this.source.position());
+        LexingState state = new InitialState(taken.remaining().skip(1), this.result.withToken(token));
         return new LexingStep(state, false);
     }
 

@@ -1,12 +1,13 @@
 package com.andreychh.lox.lexing.state;
 
-import com.andreychh.lox.Source;
 import com.andreychh.lox.lexing.LexingResult;
 import com.andreychh.lox.lexing.LexingStep;
+import com.andreychh.lox.source.PatternSource;
+import com.andreychh.lox.source.Source;
 import com.andreychh.lox.token.TokenFromLexeme;
 
 /**
- * A lexing state for handling slash characters and line comments.
+ * Represents a lexing state for handling slash characters and line comments.
  * <p>
  * This state is entered when a '/' character is encountered in the source code.
  * <p>
@@ -19,6 +20,8 @@ import com.andreychh.lox.token.TokenFromLexeme;
  * SlashState commentState = new SlashState(new Source("//comment"), new LexingResult());
  * LexingStep commentStep = commentState.next(); // Skips comment, no token created
  *}
+ *
+ * @apiNote The state that creates {@code SlashState} must guarantee that {@code source.take(1)} returns {@code "/"}.
  */
 public final class SlashState implements LexingState {
     private final Source source;
@@ -44,22 +47,31 @@ public final class SlashState implements LexingState {
      */
     @Override
     public LexingStep next() {
-        if (this.source.canPeek(1) && this.source.peek(1) == '/') {
-            return new LexingStep(
-                    new InitialState(
-                            this.source.skip(2).skipWhile(c -> c != '\n'),
-                            this.result
-                    ),
-                    false
-            );
-        }
-        return new LexingStep(
-                new InitialState(
-                        this.source.skip(1),
-                        this.result.withToken(new TokenFromLexeme("/", this.source.position()))
-                ),
-                false
+        return new LexingStep(this.state(), false);
+    }
+
+    /**
+     * Determines the next state after processing the slash character.
+     *
+     * @return The next lexing state
+     */
+    private LexingState state() {
+        return this.isComment() ? new InitialState(
+                new PatternSource(this.source.skip(2)).take("[^\\n]").remaining(),
+                this.result
+        ) : new InitialState(
+                this.source.skip(1),
+                this.result.withToken(new TokenFromLexeme("/", this.source.position()))
         );
+    }
+
+    /**
+     * Checks if the slash is the start of a line comment (i.e., "//")
+     *
+     * @return {@code true} if the next character is also a slash, {@code false} otherwise
+     */
+    private boolean isComment() {
+        return this.source.hasNext(2) && this.source.peek(1).equals("/");
     }
 
     /**

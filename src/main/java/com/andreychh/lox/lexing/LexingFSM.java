@@ -1,8 +1,8 @@
 package com.andreychh.lox.lexing;
 
-import com.andreychh.lox.Source;
 import com.andreychh.lox.lexing.state.InitialState;
 import com.andreychh.lox.lexing.state.LexingState;
+import com.andreychh.lox.source.Source;
 
 /**
  * The main Finite State Machine (FSM) for lexical analysis.
@@ -35,7 +35,7 @@ public final class LexingFSM {
     public LexingResult tokenize() {
         LexingState state = new InitialState(this.source);
         while (true) {
-            final LexingStep step = state.next();
+            LexingStep step = state.next();
             if (step.isFinal()) {
                 break;
             }

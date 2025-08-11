@@ -1,8 +1,8 @@
 package com.andreychh.lox.lexing.state;
 
 import com.andreychh.lox.Position;
-import com.andreychh.lox.Source;
 import com.andreychh.lox.lexing.LexingResult;
+import com.andreychh.lox.source.TextSource;
 import com.andreychh.lox.token.TokenFromLexeme;
 import org.junit.jupiter.api.Test;
 
@@ -17,7 +17,7 @@ class SlashStateTest {
     void createsSlashTokenWhenFollowedBySpace() {
         assertEquals(
                 new TokenFromLexeme("/", new Position(1, 1)),
-                new SlashState(new Source("/ "), new LexingResult())
+                new SlashState(new TextSource("/ "), new LexingResult())
                         .next()
                         .state()
                         .collectResult()
@@ -32,7 +32,7 @@ class SlashStateTest {
     void createsSlashTokenWhenAtEndOfSource() {
         assertEquals(
                 new TokenFromLexeme("/", new Position(1, 1)),
-                new SlashState(new Source("/"), new LexingResult())
+                new SlashState(new TextSource("/"), new LexingResult())
                         .next()
                         .state()
                         .collectResult()
@@ -46,7 +46,7 @@ class SlashStateTest {
     @Test
     void skipsCommentWithoutCreatingToken() {
         assertFalse(
-                new SlashState(new Source("//comment"), new LexingResult())
+                new SlashState(new TextSource("//comment"), new LexingResult())
                         .next()
                         .state()
                         .collectResult()
@@ -60,7 +60,7 @@ class SlashStateTest {
     @Test
     void skipsCommentUntilNewline() {
         assertFalse(
-                new SlashState(new Source("//comment\n"), new LexingResult())
+                new SlashState(new TextSource("//comment\n"), new LexingResult())
                         .next()
                         .state()
                         .collectResult()
@@ -74,7 +74,7 @@ class SlashStateTest {
     @Test
     void handlesDoubleSlashAtEndOfSource() {
         assertFalse(
-                new SlashState(new Source("//"), new LexingResult())
+                new SlashState(new TextSource("//"), new LexingResult())
                         .next()
                         .state()
                         .collectResult()
@@ -88,7 +88,7 @@ class SlashStateTest {
     @Test
     void handlesDoubleSlashFollowedByNewline() {
         assertFalse(
-                new SlashState(new Source("//\n"), new LexingResult())
+                new SlashState(new TextSource("//\n"), new LexingResult())
                         .next()
                         .state()
                         .collectResult()

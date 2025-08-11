@@ -2,7 +2,7 @@ package com.andreychh.lox.lexing;
 
 import com.andreychh.lox.Error;
 import com.andreychh.lox.Position;
-import com.andreychh.lox.Source;
+import com.andreychh.lox.source.TextSource;
 import com.andreychh.lox.token.ExplicitToken;
 import com.andreychh.lox.token.Token;
 import com.andreychh.lox.token.TokenFromLexeme;
@@ -25,7 +25,7 @@ class LexingFSMTest {
      */
     @Test
     void emptySourceYieldsOnlyEOFToken() {
-        LexingFSM fsm = new LexingFSM(new Source(""));
+        LexingFSM fsm = new LexingFSM(new TextSource(""));
         LexingResult result = fsm.tokenize();
         List<Token> tokens = new ArrayList<>();
         result.tokens().forEach(tokens::add);
@@ -41,7 +41,7 @@ class LexingFSMTest {
      */
     @Test
     void tokenizeProducesEOFTokenAtTheEnd() {
-        LexingFSM fsm = new LexingFSM(new Source("("));
+        LexingFSM fsm = new LexingFSM(new TextSource("("));
         LexingResult result = fsm.tokenize();
         List<Token> tokens = new ArrayList<>();
         result.tokens().forEach(tokens::add);
@@ -58,7 +58,7 @@ class LexingFSMTest {
     @ParameterizedTest
     @ValueSource(strings = {"(", ")", "+", "-", "{", "}", "*", ".", ",", ";"})
     void tokenizesSingleCharacterOperator(final String operator) {
-        final LexingFSM fsm = new LexingFSM(new Source(operator));
+        final LexingFSM fsm = new LexingFSM(new TextSource(operator));
         final LexingResult result = fsm.tokenize();
         final List<Token> tokens = new ArrayList<>();
         result.tokens().forEach(tokens::add);
@@ -74,7 +74,7 @@ class LexingFSMTest {
      */
     @Test
     void tokenizesEqualityOperator() {
-        LexingFSM fsm = new LexingFSM(new Source("=="));
+        LexingFSM fsm = new LexingFSM(new TextSource("=="));
         LexingResult result = fsm.tokenize();
         List<Token> tokens = new ArrayList<>();
         result.tokens().forEach(tokens::add);
@@ -90,7 +90,7 @@ class LexingFSMTest {
      */
     @Test
     void tokenizesMultipleSimpleTokens() {
-        LexingFSM fsm = new LexingFSM(new Source("()"));
+        LexingFSM fsm = new LexingFSM(new TextSource("()"));
         LexingResult result = fsm.tokenize();
         List<Token> tokens = new ArrayList<>();
         result.tokens().forEach(tokens::add);
@@ -106,7 +106,7 @@ class LexingFSMTest {
      */
     @Test
     void reportsErrorForUnexpectedCharacter() {
-        LexingFSM fsm = new LexingFSM(new Source("^"));
+        LexingFSM fsm = new LexingFSM(new TextSource("^"));
         LexingResult result = fsm.tokenize();
         List<Error> errors = new ArrayList<>();
         result.errors().forEach(errors::add);
@@ -122,7 +122,7 @@ class LexingFSMTest {
      */
     @Test
     void ignoresWhitespace() {
-        LexingFSM fsm = new LexingFSM(new Source(" \t\n\r"));
+        LexingFSM fsm = new LexingFSM(new TextSource(" \t\n\r"));
         LexingResult result = fsm.tokenize();
         List<Token> tokens = new ArrayList<>();
         result.tokens().forEach(tokens::add);
@@ -138,7 +138,7 @@ class LexingFSMTest {
      */
     @Test
     void preservesPositionsAcrossWhitespace() {
-        LexingFSM fsm = new LexingFSM(new Source(" \n +"));
+        LexingFSM fsm = new LexingFSM(new TextSource(" \n +"));
         LexingResult result = fsm.tokenize();
         List<Token> tokens = new ArrayList<>();
         result.tokens().forEach(tokens::add);
