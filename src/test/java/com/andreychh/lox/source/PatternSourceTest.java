@@ -9,39 +9,39 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class PatternSourceTest {
     @Test
-    void patternSourceConformsReturnsTrueWhenAllPatternsMatch() {
+    void returnsTrueWhenAllPatternsMatch() {
         assertTrue(
-                new PatternSource(new TextSource("abc")).conforms(new String[]{"[a-z]", "[a-z]", "[a-z]"}),
+                new PatternSource(new TextSource("abc")).matches(new String[]{"[a-z]", "[a-z]", "[a-z]"}),
                 "PatternSource failed to confirm conformity when all patterns match"
         );
     }
 
     @Test
-    void patternSourceConformsReturnsTrueWhenPrefixMatchesPatterns() {
+    void returnsTrueWhenPrefixMatchesPatterns() {
         assertTrue(
-                new PatternSource(new TextSource("abcdef")).conforms(new String[]{"[a-z]", "[a-z]", "[a-z]"}),
+                new PatternSource(new TextSource("abcdef")).matches(new String[]{"[a-z]", "[a-z]", "[a-z]"}),
                 "PatternSource must not confirm conformity when only prefix matches patterns"
         );
     }
 
     @Test
-    void patternSourceConformsReturnsFalseWhenAnyPatternDoesNotMatch() {
+    void returnsFalseWhenAnyPatternDoesNotMatch() {
         assertFalse(
-                new PatternSource(new TextSource("ab1")).conforms(new String[]{"[a-z]", "[a-z]", "[a-z]"}),
+                new PatternSource(new TextSource("ab1")).matches(new String[]{"[a-z]", "[a-z]", "[a-z]"}),
                 "PatternSource incorrectly confirmed conformity when a pattern does not match"
         );
     }
 
     @Test
-    void patternSourceConformsReturnsFalseWhenNotEnoughCharacters() {
+    void returnsFalseWhenNotEnoughCharactersToMatchPatterns() {
         assertFalse(
-                new PatternSource(new TextSource("a")).conforms(new String[]{"[a-z]", "[a-z]"}),
+                new PatternSource(new TextSource("a")).matches(new String[]{"[a-z]", "[a-z]"}),
                 "PatternSource incorrectly confirmed conformity when not enough characters"
         );
     }
 
     @Test
-    void patternSourceTakeReturnsFragmentWithMatchingPrefix() {
+    void returnsFragmentWithMatchingPrefixWhenTakeIsCalled() {
         assertEquals(
                 "abc",
                 new PatternSource(new TextSource("abc123")).take("[a-z]").value(),
@@ -50,7 +50,7 @@ class PatternSourceTest {
     }
 
     @Test
-    void patternSourceTakeReturnsEmptyFragmentWhenNoMatch() {
+    void returnsEmptyFragmentWhenNoCharactersMatchPattern() {
         assertEquals(
                 "",
                 new PatternSource(new TextSource("123")).take("[a-z]").value(),
@@ -59,16 +59,16 @@ class PatternSourceTest {
     }
 
     @Test
-    void patternSourceSkipSkipsAllMatchingCharacters() {
+    void skipsAllMatchingCharactersWhenSkipIsCalled() {
         assertEquals(
                 "BBB",
-                new PatternSource(new TextSource("aaaBBB")).skip("[a]").take(3).value(),
+                new PatternSource(new TextSource("aaaBBB")).skip("a").take(3).value(),
                 "PatternSource failed to skip all matching characters"
         );
     }
 
     @Test
-    void patternSourceSkipSkipsNothingWhenNoMatch() {
+    void skipsNothingWhenNoCharactersMatchPattern() {
         assertEquals(
                 "1",
                 new PatternSource(new TextSource("123")).skip("[a-z]").peek(0),
@@ -77,7 +77,7 @@ class PatternSourceTest {
     }
 
     @Test
-    void patternSourceHandlesNonAsciiCharacters() {
+    void handlesNonAsciiCharactersWhenTakingByPattern() {
         assertEquals(
                 "абв",
                 new PatternSource(new TextSource("абв123")).take("[а-я]").value(),
@@ -86,7 +86,7 @@ class PatternSourceTest {
     }
 
     @Test
-    void patternSourceTakeReturnsWholeTextWhenAllMatch() {
+    void returnsWholeTextWhenAllCharactersMatchPattern() {
         assertEquals(
                 "xyz",
                 new PatternSource(new TextSource("xyz")).take("[a-z]").value(),
