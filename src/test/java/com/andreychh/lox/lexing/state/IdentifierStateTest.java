@@ -1,8 +1,8 @@
 package com.andreychh.lox.lexing.state;
 
 import com.andreychh.lox.Position;
-import com.andreychh.lox.Source;
 import com.andreychh.lox.lexing.LexingResult;
+import com.andreychh.lox.source.TextSource;
 import com.andreychh.lox.token.ExplicitToken;
 import com.andreychh.lox.token.TokenType;
 import org.junit.jupiter.api.Test;
@@ -23,7 +23,7 @@ class IdentifierStateTest {
     void recognizesKeyword(String keyword, TokenType type) {
         assertEquals(
                 new ExplicitToken(type, keyword, new Position(1, 1)),
-                new IdentifierState(new Source(keyword), new LexingResult())
+                new IdentifierState(new TextSource(keyword), new LexingResult())
                         .next()
                         .state()
                         .collectResult()
@@ -38,7 +38,7 @@ class IdentifierStateTest {
     void stopsAtNonAlphanumericCharacter() {
         assertEquals(
                 new ExplicitToken(TokenType.VAR, "var", new Position(1, 1)),
-                new IdentifierState(new Source("var("), new LexingResult())
+                new IdentifierState(new TextSource("var("), new LexingResult())
                         .next()
                         .state()
                         .collectResult()
@@ -53,7 +53,7 @@ class IdentifierStateTest {
     void createsIdentifierWithNumbers() {
         assertEquals(
                 new ExplicitToken(TokenType.IDENTIFIER, "var123", new Position(1, 1)),
-                new IdentifierState(new Source("var123"), new LexingResult())
+                new IdentifierState(new TextSource("var123"), new LexingResult())
                         .next()
                         .state()
                         .collectResult()
@@ -68,7 +68,7 @@ class IdentifierStateTest {
     void createsIdentifierStartingWithUnderscore() {
         assertEquals(
                 new ExplicitToken(TokenType.IDENTIFIER, "_var", new Position(1, 1)),
-                new IdentifierState(new Source("_var"), new LexingResult())
+                new IdentifierState(new TextSource("_var"), new LexingResult())
                         .next()
                         .state()
                         .collectResult()
@@ -83,7 +83,7 @@ class IdentifierStateTest {
     void createsSingleLetterIdentifier() {
         assertEquals(
                 new ExplicitToken(TokenType.IDENTIFIER, "a", new Position(1, 1)),
-                new IdentifierState(new Source("a"), new LexingResult())
+                new IdentifierState(new TextSource("a"), new LexingResult())
                         .next()
                         .state()
                         .collectResult()
@@ -98,7 +98,7 @@ class IdentifierStateTest {
     void treatsUppercaseKeywordAsIdentifier() {
         assertEquals(
                 new ExplicitToken(TokenType.IDENTIFIER, "VAR", new Position(1, 1)),
-                new IdentifierState(new Source("VAR"), new LexingResult())
+                new IdentifierState(new TextSource("VAR"), new LexingResult())
                         .next()
                         .state()
                         .collectResult()
@@ -113,7 +113,7 @@ class IdentifierStateTest {
     void treatsCapitalizedWordAsIdentifier() {
         assertEquals(
                 new ExplicitToken(TokenType.IDENTIFIER, "Variable", new Position(1, 1)),
-                new IdentifierState(new Source("Variable"), new LexingResult())
+                new IdentifierState(new TextSource("Variable"), new LexingResult())
                         .next()
                         .state()
                         .collectResult()

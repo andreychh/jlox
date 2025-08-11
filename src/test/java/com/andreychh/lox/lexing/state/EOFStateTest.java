@@ -2,9 +2,10 @@ package com.andreychh.lox.lexing.state;
 
 import com.andreychh.lox.Error;
 import com.andreychh.lox.Position;
-import com.andreychh.lox.Source;
 import com.andreychh.lox.lexing.LexingResult;
 import com.andreychh.lox.lexing.LexingStep;
+import com.andreychh.lox.source.Source;
+import com.andreychh.lox.source.TextSource;
 import com.andreychh.lox.token.ExplicitToken;
 import com.andreychh.lox.token.Token;
 import com.andreychh.lox.token.TokenFromLexeme;
@@ -19,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class EOFStateTest {
     @Test
     void shouldAppendEOFTokenAndTransitionToTerminatedState() {
-        Source source = new Source("var").skip(3);
+        Source source = new TextSource("var").skip(3);
         Token existingToken = new TokenFromLexeme("var", new Position(1, 1));
         LexingState state = new EOFState(source, new LexingResult().withToken(existingToken));
         Token expectedToken = new ExplicitToken(TokenType.EOF, "", source.position());

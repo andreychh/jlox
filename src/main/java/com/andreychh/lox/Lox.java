@@ -9,12 +9,14 @@ import java.nio.file.Paths;
 
 import com.andreychh.lox.lexing.LexingFSM;
 import com.andreychh.lox.lexing.LexingResult;
+import com.andreychh.lox.source.Source;
+import com.andreychh.lox.source.TextSource;
 
 /**
  * The main Lox interpreter application class.
  * <p>
- * This class serves as the primary interface for the Lox language interpreter.
- * It processes command-line arguments to determine the execution mode.
+ * This class serves as the primary interface for the Lox language interpreter. It processes command-line arguments to
+ * determine the execution mode.
  */
 public final class Lox {
     private final String[] args;
@@ -31,8 +33,8 @@ public final class Lox {
     /**
      * Executes the interpreter based on the provided arguments.
      * <p>
-     * If no arguments are provided, it starts the REPL. Otherwise, it attempts
-     * to run the script specified by the first argument.
+     * If no arguments are provided, it starts the REPL. Otherwise, it attempts to run the script specified by the first
+     * argument.
      */
     public void exec() {
         if (this.args.length == 0) {
@@ -45,8 +47,8 @@ public final class Lox {
     /**
      * Starts an interactive Read-Eval-Print Loop (REPL).
      * <p>
-     * It reads lines of code from the standard input, executes them, and prints
-     * the results until the program is terminated.
+     * It reads lines of code from the standard input, executes them, and prints the results until the program is
+     * terminated.
      */
     private void runREPL() {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in, Charset.defaultCharset()))) {
@@ -56,7 +58,7 @@ public final class Lox {
                 if (line == null) {
                     break;
                 }
-                this.run(new Source(line));
+                this.run(new TextSource(line));
             }
         } catch (IOException e) {
             throw new RuntimeException("Error reading from input", e);
@@ -66,12 +68,12 @@ public final class Lox {
     /**
      * Executes a Lox script from a file.
      *
-     * @param path The path to the script file.
+     * @param path The path to the script file
      */
     private void runFile(final String path) {
         try {
             byte[] bytes = Files.readAllBytes(Paths.get(path));
-            this.run(new Source(new String(bytes, Charset.defaultCharset())));
+            this.run(new TextSource(new String(bytes, Charset.defaultCharset())));
         } catch (IOException e) {
             throw new RuntimeException("Could not read file '%s'".formatted(path), e);
         }
@@ -80,7 +82,7 @@ public final class Lox {
     /**
      * Runs the lexical analysis on a given source and prints the result.
      *
-     * @param source The source code to process.
+     * @param source The source code to process
      */
     private void run(final Source source) {
         LexingResult result = new LexingFSM(source).tokenize();

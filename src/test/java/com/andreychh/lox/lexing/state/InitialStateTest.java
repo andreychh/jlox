@@ -2,9 +2,9 @@ package com.andreychh.lox.lexing.state;
 
 import com.andreychh.lox.Error;
 import com.andreychh.lox.Position;
-import com.andreychh.lox.Source;
 import com.andreychh.lox.lexing.LexingResult;
 import com.andreychh.lox.lexing.LexingStep;
+import com.andreychh.lox.source.TextSource;
 import com.andreychh.lox.token.Token;
 import com.andreychh.lox.token.TokenFromLexeme;
 import org.junit.jupiter.api.Test;
@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class InitialStateTest {
     @Test
     void shouldTransitionToEOFStateOnEmptySource() {
-        LexingState state = new InitialState(new Source(""));
+        LexingState state = new InitialState(new TextSource(""));
 
         LexingStep step = state.next();
         assertFalse(step.isFinal());
@@ -29,7 +29,7 @@ class InitialStateTest {
     @ParameterizedTest
     @ValueSource(strings = {" ", "\t", "\n", "\r"})
     void shouldSkipWhitespaceAndRemainInInitialState(String whitespace) {
-        LexingState state = new InitialState(new Source(whitespace + "a"));
+        LexingState state = new InitialState(new TextSource(whitespace + "a"));
 
         LexingStep step = state.next();
         assertFalse(step.isFinal());
@@ -47,7 +47,7 @@ class InitialStateTest {
     @ParameterizedTest
     @ValueSource(strings = {"(", ")", "{", "}", ".", ",", ";", "+", "-", "*"})
     void shouldCreateTokenForSingleCharOperators(String operator) {
-        LexingState state = new InitialState(new Source(operator));
+        LexingState state = new InitialState(new TextSource(operator));
         Token expectedToken = new TokenFromLexeme(operator, new Position(1, 1));
 
         LexingStep step = state.next();
@@ -67,7 +67,7 @@ class InitialStateTest {
     @ParameterizedTest
     @ValueSource(strings = {"!", "=", ">", "<"})
     void shouldTransitionToCompoundOperatorState(String operatorStart) {
-        LexingState state = new InitialState(new Source(operatorStart));
+        LexingState state = new InitialState(new TextSource(operatorStart));
 
         LexingStep step = state.next();
         assertFalse(step.isFinal());
@@ -84,7 +84,7 @@ class InitialStateTest {
 
     @Test
     void shouldAddErrorAndSkipUnexpectedCharacter() {
-        LexingState state = new InitialState(new Source("?a"));
+        LexingState state = new InitialState(new TextSource("?a"));
 
         LexingStep step = state.next();
         assertFalse(step.isFinal());

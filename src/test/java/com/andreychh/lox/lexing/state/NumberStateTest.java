@@ -1,8 +1,8 @@
 package com.andreychh.lox.lexing.state;
 
 import com.andreychh.lox.Position;
-import com.andreychh.lox.Source;
 import com.andreychh.lox.lexing.LexingResult;
+import com.andreychh.lox.source.TextSource;
 import com.andreychh.lox.token.ExplicitToken;
 import com.andreychh.lox.token.TokenType;
 import org.junit.jupiter.api.Test;
@@ -17,7 +17,7 @@ class NumberStateTest {
     void createsNumberTokenFromIntegerLiteral() {
         assertEquals(
                 new ExplicitToken(TokenType.NUMBER, "42", new Position(1, 1)),
-                new NumberState(new Source("42"), new LexingResult())
+                new NumberState(new TextSource("42"), new LexingResult())
                         .next()
                         .state()
                         .collectResult()
@@ -32,7 +32,7 @@ class NumberStateTest {
     void preservesZeroPaddedFloatLiteral() {
         assertEquals(
                 new ExplicitToken(TokenType.NUMBER, "042.000", new Position(1, 1)),
-                new NumberState(new Source("042.000"), new LexingResult())
+                new NumberState(new TextSource("042.000"), new LexingResult())
                         .next()
                         .state()
                         .collectResult()
@@ -47,7 +47,7 @@ class NumberStateTest {
     void createsNumberTokenFromFloatLiteral() {
         assertEquals(
                 new ExplicitToken(TokenType.NUMBER, "42.0", new Position(1, 1)),
-                new NumberState(new Source("42.0"), new LexingResult())
+                new NumberState(new TextSource("42.0"), new LexingResult())
                         .next()
                         .state()
                         .collectResult()
@@ -62,7 +62,7 @@ class NumberStateTest {
     void createsNumberTokenFromIntegerWithTrailingDot() {
         assertEquals(
                 new ExplicitToken(TokenType.NUMBER, "42", new Position(1, 1)),
-                new NumberState(new Source("42."), new LexingResult())
+                new NumberState(new TextSource("42."), new LexingResult())
                         .next()
                         .state()
                         .collectResult()
@@ -77,7 +77,7 @@ class NumberStateTest {
     void createsNumberTokenFromMultipleDots() {
         assertEquals(
                 new ExplicitToken(TokenType.NUMBER, "1.2", new Position(1, 1)),
-                new NumberState(new Source("1.2.3"), new LexingResult())
+                new NumberState(new TextSource("1.2.3"), new LexingResult())
                         .next()
                         .state()
                         .collectResult()
@@ -92,7 +92,7 @@ class NumberStateTest {
     void createsNumberTokenFromDoubleDots() {
         assertEquals(
                 new ExplicitToken(TokenType.NUMBER, "1", new Position(1, 1)),
-                new NumberState(new Source("1..2.3"), new LexingResult())
+                new NumberState(new TextSource("1..2.3"), new LexingResult())
                         .next()
                         .state()
                         .collectResult()

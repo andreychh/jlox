@@ -1,14 +1,19 @@
 package com.andreychh.lox.lexing.state;
 
-import com.andreychh.lox.Source;
 import com.andreychh.lox.lexing.LexingResult;
 import com.andreychh.lox.lexing.LexingStep;
+import com.andreychh.lox.source.Fragment;
+import com.andreychh.lox.source.PatternSource;
+import com.andreychh.lox.source.Source;
 import com.andreychh.lox.token.ExplicitToken;
 import com.andreychh.lox.token.Token;
 import com.andreychh.lox.token.TokenType;
 
 /**
- * A lexing state for processing identifiers and keywords.
+ * Represents a lexing state for processing identifiers and keywords.
+ * <p>
+ * This state is responsible for consuming a sequence of alphanumeric characters and underscores, and for producing
+ * either an identifier or a keyword token.
  * <p>
  * {@snippet :
  * // Creates an identifier token for "variable"
@@ -24,7 +29,8 @@ import com.andreychh.lox.token.TokenType;
  * LexingStep underscoreStep = underscoreState.next(); // Returns IDENTIFIER token
  *}
  *
- * @implNote This state should only be created when the source is positioned at a letter or underscore character.
+ * @implNote The state that creates {@code IdentifierState} must guarantee that {@code source.take(1)} returns a letter
+ * or underscore character.
  */
 public final class IdentifierState implements LexingState {
     private final Source source;
@@ -49,23 +55,20 @@ public final class IdentifierState implements LexingState {
      */
     @Override
     public LexingStep next() {
-        return new LexingStep(
-                new InitialState(
-                        this.source.skipWhile(this::isAlphaNumeric),
-                        this.result.withToken(this.tokenFromLexeme(this.source.takeWhile(this::isAlphaNumeric)))
-                ),
-                false
-        );
+        Fragment taken = new PatternSource(this.source).take("[0-9a-zA-Z_]");
+        Token token = new ExplicitToken(this.tokenType(taken.value()), taken.value(), this.source.position());
+        LexingState state = new InitialState(taken.remaining(), this.result.withToken(token));
+        return new LexingStep(state, false);
     }
 
     /**
-     * Creates a token from the given lexeme, determining whether it represents a keyword or identifier.
+     * Determines the token type for the given lexeme.
      *
      * @param lexeme The identifier lexeme to classify
-     * @return A token with the appropriate type (keyword or identifier)
+     * @return The appropriate TokenType (keyword or IDENTIFIER)
      */
-    private Token tokenFromLexeme(final String lexeme) {
-        TokenType type = switch (lexeme) {
+    private TokenType tokenType(final String lexeme) {
+        return switch (lexeme) {
             case "and" -> TokenType.AND;
             case "class" -> TokenType.CLASS;
             case "else" -> TokenType.ELSE;
@@ -84,20 +87,6 @@ public final class IdentifierState implements LexingState {
             case "while" -> TokenType.WHILE;
             default -> TokenType.IDENTIFIER;
         };
-        return new ExplicitToken(type, lexeme, this.source.position());
-    }
-
-    /**
-     * Determines whether a character is valid within an identifier.
-     *
-     * @param c The character to check
-     * @return True if the character is alphanumeric or underscore
-     */
-    private boolean isAlphaNumeric(final char c) {
-        return c == '_'
-                || (c >= 'a' && c <= 'z')
-                || (c >= 'A' && c <= 'Z')
-                || (c >= '0' && c <= '9');
     }
 
     /**

@@ -1,14 +1,15 @@
 package com.andreychh.lox.lexing.state;
 
 import com.andreychh.lox.Error;
-import com.andreychh.lox.Source;
 import com.andreychh.lox.lexing.LexingResult;
 import com.andreychh.lox.lexing.LexingStep;
+import com.andreychh.lox.source.Fragment;
+import com.andreychh.lox.source.Source;
 import com.andreychh.lox.token.Token;
 import com.andreychh.lox.token.TokenFromLexeme;
 
 /**
- * The initial state of the lexical analysis process.
+ * Represents the initial state of the lexical analysis process.
  * <p>
  * This state is responsible for examining the next character in the source and transitioning to the appropriate
  * specialized state based on the character. It directly handles simple single-character tokens and whitespace.
@@ -44,32 +45,47 @@ public final class InitialState implements LexingState {
      */
     @Override
     public LexingStep next() {
-        if (!this.source.canPeek(0)) {
-            return new LexingStep(new EOFState(this.source, this.result), false);
-        }
-        char character = this.source.peek(0);
-        LexingState state = switch (character) {
-            case ' ', '\t', '\n', '\r' -> new InitialState(this.source.skip(1), this.result);
-            case '(', ')', '{', '}', '.', ',', ';', '+', '-', '*' -> {
-                Token token = new TokenFromLexeme("" + character, this.source.position());
-                yield new InitialState(this.source.skip(1), this.result.withToken(token));
+        return new LexingStep(this.state(), false);
+    }
+
+    /**
+     * Determines the next state based on the current source.
+     *
+     * @return The next lexing state
+     */
+    private LexingState state() {
+        return this.source.hasNext(1) ? this.nextState(this.source.take(1)) : new EOFState(this.source, this.result);
+    }
+
+    /**
+     * Determines the next state based on the taken fragment.
+     *
+     * @param taken The fragment representing the next character
+     * @return The next lexing state
+     */
+    private LexingState nextState(final Fragment taken) {
+        return switch (taken.value()) {
+            case " ", "\t", "\n", "\r" -> new InitialState(taken.remaining(), this.result);
+            case "(", ")", "{", "}", ".", ",", ";", "+", "-", "*" -> {
+                Token token = new TokenFromLexeme(taken.value(), this.source.position());
+                yield new InitialState(taken.remaining(), this.result.withToken(token));
             }
-            case '!', '=', '>', '<' -> new CompoundOperatorState(this.source, this.result);
-            case '/' -> new SlashState(this.source, this.result);
-            case '"' -> new StringState(this.source, this.result);
-            case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' -> new NumberState(this.source, this.result);
-            case '_', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i',
-                 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's',
-                 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C',
-                 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
-                 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W',
-                 'X', 'Y', 'Z' -> new IdentifierState(this.source, this.result);
+            case "!", "=", ">", "<" -> new CompoundOperatorState(this.source, this.result);
+            case "/" -> new SlashState(this.source, this.result);
+            case "\"" -> new StringState(this.source, this.result);
+            case "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" -> new NumberState(this.source, this.result);
+            case "_", "a", "b", "c", "d", "e", "f", "g", "h", "i",
+                 "j", "k", "l", "m", "n", "o", "p", "q", "r", "s",
+                 "t", "u", "v", "w", "x", "y", "z", "A", "B", "C",
+                 "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
+                 "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W",
+                 "X", "Y", "Z" -> new IdentifierState(this.source, this.result);
             default -> {
-                Error error = new Error("Unexpected character '%s'.".formatted(character), this.source.position());
-                yield new InitialState(this.source.skip(1), this.result.withError(error));
+                String message = "Unexpected character '%s'.".formatted(taken.value());
+                Error error = new Error(message, this.source.position());
+                yield new InitialState(taken.remaining(), this.result.withError(error));
             }
         };
-        return new LexingStep(state, false);
     }
 
     /**
