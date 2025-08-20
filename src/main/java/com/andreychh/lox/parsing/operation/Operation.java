@@ -1,6 +1,6 @@
 package com.andreychh.lox.parsing.operation;
 
-import com.andreychh.lox.parsing.expression.*;
+import com.andreychh.lox.parsing.expression.Expression;
 import com.andreychh.lox.token.Token;
 
 /**

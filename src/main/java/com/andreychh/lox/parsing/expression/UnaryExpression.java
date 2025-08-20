@@ -18,7 +18,7 @@ public final class UnaryExpression implements Expression {
      * @param operator the operator token
      * @param operand  the operand expression
      */
-    public UnaryExpression(Token operator, Expression operand) {
+    public UnaryExpression(final Token operator, final Expression operand) {
         this.operator = operator;
         this.operand = operand;
     }
