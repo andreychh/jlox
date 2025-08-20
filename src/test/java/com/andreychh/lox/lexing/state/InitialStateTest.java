@@ -5,8 +5,9 @@ import com.andreychh.lox.Position;
 import com.andreychh.lox.lexing.LexingResult;
 import com.andreychh.lox.lexing.LexingStep;
 import com.andreychh.lox.source.TextSource;
+import com.andreychh.lox.token.ExplicitToken;
 import com.andreychh.lox.token.Token;
-import com.andreychh.lox.token.TokenFromLexeme;
+import com.andreychh.lox.token.TokenType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -48,7 +49,7 @@ class InitialStateTest {
     @ValueSource(strings = {"(", ")", "{", "}", ".", ",", ";", "+", "-", "*"})
     void shouldCreateTokenForSingleCharOperators(String operator) {
         LexingState state = new InitialState(new TextSource(operator));
-        Token expectedToken = new TokenFromLexeme(operator, new Position(1, 1));
+        Token expectedToken = new ExplicitToken(tokenType(operator), operator, new Position(1, 1));
 
         LexingStep step = state.next();
         assertFalse(step.isFinal());
@@ -62,6 +63,24 @@ class InitialStateTest {
 
         List<Error> errors = this.toList(result.errors());
         assertTrue(errors.isEmpty());
+    }
+
+    TokenType tokenType(final String lexeme) {
+        return switch (lexeme) {
+            case "(" -> TokenType.LEFT_PAREN;
+            case ")" -> TokenType.RIGHT_PAREN;
+            case "{" -> TokenType.LEFT_BRACE;
+            case "}" -> TokenType.RIGHT_BRACE;
+            case "." -> TokenType.DOT;
+            case "," -> TokenType.COMMA;
+            case ";" -> TokenType.SEMICOLON;
+            case "+" -> TokenType.PLUS;
+            case "-" -> TokenType.MINUS;
+            case "*" -> TokenType.STAR;
+            default -> throw new IllegalArgumentException(
+                "Cannot determine token type for unexpected lexeme: '%s'".formatted(lexeme)
+            );
+        };
     }
 
     @ParameterizedTest

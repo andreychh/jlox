@@ -5,8 +5,9 @@ import com.andreychh.lox.Position;
 import com.andreychh.lox.lexing.LexingResult;
 import com.andreychh.lox.lexing.LexingStep;
 import com.andreychh.lox.source.TextSource;
+import com.andreychh.lox.token.ExplicitToken;
 import com.andreychh.lox.token.Token;
-import com.andreychh.lox.token.TokenFromLexeme;
+import com.andreychh.lox.token.TokenType;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -18,7 +19,7 @@ class CompoundOperatorStateTest {
     @Test
     void shouldCreateCompoundTokenWhenFollowedByEquals() {
         LexingState state = new CompoundOperatorState(new TextSource("!="), new LexingResult());
-        Token expectedToken = new TokenFromLexeme("!=", new Position(1, 1));
+        Token expectedToken = new ExplicitToken(TokenType.BANG_EQUAL, "!=", new Position(1, 1));
 
         LexingStep step = state.next();
         assertFalse(step.isFinal());
@@ -37,7 +38,7 @@ class CompoundOperatorStateTest {
     @Test
     void shouldCreateSingleTokenWhenNotFollowedByEquals() {
         LexingState state = new CompoundOperatorState(new TextSource("!a"), new LexingResult());
-        Token expectedToken = new TokenFromLexeme("!", new Position(1, 1));
+        Token expectedToken = new ExplicitToken(TokenType.BANG, "!", new Position(1, 1));
 
         LexingStep step = state.next();
         assertFalse(step.isFinal());
@@ -56,7 +57,7 @@ class CompoundOperatorStateTest {
     @Test
     void shouldCreateSingleTokenWhenItIsTheLastCharInSource() {
         LexingState state = new CompoundOperatorState(new TextSource("!"), new LexingResult());
-        Token expectedToken = new TokenFromLexeme("!", new Position(1, 1));
+        Token expectedToken = new ExplicitToken(TokenType.BANG, "!", new Position(1, 1));
 
         LexingStep step = state.next();
         assertFalse(step.isFinal());
