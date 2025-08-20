@@ -4,14 +4,15 @@ import com.andreychh.lox.lexing.LexingResult;
 import com.andreychh.lox.lexing.LexingStep;
 import com.andreychh.lox.source.Fragment;
 import com.andreychh.lox.source.Source;
+import com.andreychh.lox.token.ExplicitToken;
 import com.andreychh.lox.token.Token;
-import com.andreychh.lox.token.TokenFromLexeme;
+import com.andreychh.lox.token.TokenType;
 
 /**
  * Represents a state that handles operators which can be either single or double character tokens.
  * <p>
- * This state processes ambiguous operators such as '!', '=', '>', and '<', which can be followed by an '=' to form
- * compound operators ('!=', '==', '>=', '<='). It looks ahead by one character to resolve this ambiguity and produces
+ * This state processes ambiguous operators such as '=', '!', '>', and '<', which can be followed by an '=' to form
+ * compound operators ('==', '!=', '>=', '<='). It looks ahead by one character to resolve this ambiguity and produces
  * the appropriate token.
  * <p>
  * {@snippet :
@@ -49,7 +50,7 @@ public final class CompoundOperatorState implements LexingState {
     @Override
     public LexingStep next() {
         Fragment taken = this.takeOperator();
-        Token token = new TokenFromLexeme(taken.value(), this.source.position());
+        Token token = new ExplicitToken(this.tokenType(taken.value()), taken.value(), this.source.position());
         LexingState state = new InitialState(taken.remaining(), this.result.withToken(token));
         return new LexingStep(state, false);
     }
@@ -64,12 +65,34 @@ public final class CompoundOperatorState implements LexingState {
     }
 
     /**
-     * Checks if the current operator is a compound operator (e.g., '!=', '==', '>=', '<=').
+     * Checks if the current operator is a compound operator (e.g., '==', '!=', '>=', '<=').
      *
      * @return {@code true} if the next character is '=', {@code false} otherwise
      */
     private boolean isCompound() {
         return this.source.hasNext(2) && this.source.peek(1).equals("=");
+    }
+
+    /**
+     * Determines the token type for the given lexeme.
+     *
+     * @param lexeme The operator lexeme to classify
+     * @return The appropriate TokenType
+     */
+    private TokenType tokenType(final String lexeme) {
+        return switch (lexeme) {
+            case "=" -> TokenType.EQUAL;
+            case "==" -> TokenType.EQUAL_EQUAL;
+            case "!" -> TokenType.BANG;
+            case "!=" -> TokenType.BANG_EQUAL;
+            case ">" -> TokenType.GREATER;
+            case ">=" -> TokenType.GREATER_EQUAL;
+            case "<" -> TokenType.LESS;
+            case "<=" -> TokenType.LESS_EQUAL;
+            default -> throw new IllegalArgumentException(
+                "Cannot determine token type for unexpected lexeme: '%s'".formatted(lexeme)
+            );
+        };
     }
 
     /**

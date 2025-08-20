@@ -3,16 +3,18 @@ package com.andreychh.lox.lexing.state;
 import com.andreychh.lox.Position;
 import com.andreychh.lox.lexing.LexingResult;
 import com.andreychh.lox.lexing.LexingStep;
+import com.andreychh.lox.token.ExplicitToken;
 import com.andreychh.lox.token.Token;
-import com.andreychh.lox.token.TokenFromLexeme;
+import com.andreychh.lox.token.TokenType;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class TerminatedStateTest {
     @Test
     void shouldSignalTerminationAndPreserveFinalResult() {
-        Token existingToken = new TokenFromLexeme("var", new Position(1, 1));
+        Token existingToken = new ExplicitToken(TokenType.VAR, "var", new Position(1, 1));
         LexingResult expectedResult = new LexingResult().withToken(existingToken);
         LexingState state = new TerminatedState(expectedResult);
 

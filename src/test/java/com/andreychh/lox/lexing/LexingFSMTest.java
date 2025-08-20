@@ -5,7 +5,6 @@ import com.andreychh.lox.Position;
 import com.andreychh.lox.source.TextSource;
 import com.andreychh.lox.token.ExplicitToken;
 import com.andreychh.lox.token.Token;
-import com.andreychh.lox.token.TokenFromLexeme;
 import com.andreychh.lox.token.TokenType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -30,9 +29,9 @@ class LexingFSMTest {
         List<Token> tokens = new ArrayList<>();
         result.tokens().forEach(tokens::add);
         assertEquals(
-                1,
-                tokens.size(),
-                "Empty source must produce exactly one EOF token"
+            1,
+            tokens.size(),
+            "Empty source must produce exactly one EOF token"
         );
     }
 
@@ -46,9 +45,9 @@ class LexingFSMTest {
         List<Token> tokens = new ArrayList<>();
         result.tokens().forEach(tokens::add);
         assertEquals(
-                new ExplicitToken(TokenType.EOF, "", new Position(1, 2)),
-                tokens.getLast(),
-                "Last token must be EOF at position after content"
+            new ExplicitToken(TokenType.EOF, "", new Position(1, 2)),
+            tokens.getLast(),
+            "Last token must be EOF at position after content"
         );
     }
 
@@ -63,10 +62,28 @@ class LexingFSMTest {
         final List<Token> tokens = new ArrayList<>();
         result.tokens().forEach(tokens::add);
         assertEquals(
-                new TokenFromLexeme(operator, new Position(1, 1)),
-                tokens.getFirst(),
-                "First token must be '%s' operator".formatted(operator)
+            new ExplicitToken(tokenType(operator), operator, new Position(1, 1)),
+            tokens.getFirst(),
+            "First token must be '%s' operator".formatted(operator)
         );
+    }
+
+    TokenType tokenType(final String lexeme) {
+        return switch (lexeme) {
+            case "(" -> TokenType.LEFT_PAREN;
+            case ")" -> TokenType.RIGHT_PAREN;
+            case "{" -> TokenType.LEFT_BRACE;
+            case "}" -> TokenType.RIGHT_BRACE;
+            case "." -> TokenType.DOT;
+            case "," -> TokenType.COMMA;
+            case ";" -> TokenType.SEMICOLON;
+            case "+" -> TokenType.PLUS;
+            case "-" -> TokenType.MINUS;
+            case "*" -> TokenType.STAR;
+            default -> throw new IllegalArgumentException(
+                "Cannot determine token type for unexpected lexeme: '%s'".formatted(lexeme)
+            );
+        };
     }
 
     /**
@@ -79,9 +96,9 @@ class LexingFSMTest {
         List<Token> tokens = new ArrayList<>();
         result.tokens().forEach(tokens::add);
         assertEquals(
-                new TokenFromLexeme("==", new Position(1, 1)),
-                tokens.getFirst(),
-                "First token must be equality operator"
+            new ExplicitToken(TokenType.EQUAL_EQUAL, "==", new Position(1, 1)),
+            tokens.getFirst(),
+            "First token must be equality operator"
         );
     }
 
@@ -95,9 +112,9 @@ class LexingFSMTest {
         List<Token> tokens = new ArrayList<>();
         result.tokens().forEach(tokens::add);
         assertEquals(
-                3,
-                tokens.size(),
-                "Source with '()' must produce 3 tokens (left paren, right paren, EOF)"
+            3,
+            tokens.size(),
+            "Source with '()' must produce 3 tokens (left paren, right paren, EOF)"
         );
     }
 
@@ -111,9 +128,9 @@ class LexingFSMTest {
         List<Error> errors = new ArrayList<>();
         result.errors().forEach(errors::add);
         assertEquals(
-                1,
-                errors.size(),
-                "Source with unexpected character must produce error"
+            1,
+            errors.size(),
+            "Source with unexpected character must produce error"
         );
     }
 
@@ -127,9 +144,9 @@ class LexingFSMTest {
         List<Token> tokens = new ArrayList<>();
         result.tokens().forEach(tokens::add);
         assertEquals(
-                1,
-                tokens.size(),
-                "Source with only whitespace must produce just EOF token"
+            1,
+            tokens.size(),
+            "Source with only whitespace must produce just EOF token"
         );
     }
 
@@ -143,9 +160,9 @@ class LexingFSMTest {
         List<Token> tokens = new ArrayList<>();
         result.tokens().forEach(tokens::add);
         assertEquals(
-                new TokenFromLexeme("+", new Position(2, 2)),
-                tokens.getFirst(),
-                "Token after whitespace must have correct position"
+            new ExplicitToken(TokenType.PLUS, "+", new Position(2, 2)),
+            tokens.getFirst(),
+            "Token after whitespace must have correct position"
         );
     }
 }

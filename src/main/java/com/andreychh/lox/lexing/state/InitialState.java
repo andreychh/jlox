@@ -5,8 +5,9 @@ import com.andreychh.lox.lexing.LexingResult;
 import com.andreychh.lox.lexing.LexingStep;
 import com.andreychh.lox.source.Fragment;
 import com.andreychh.lox.source.Source;
+import com.andreychh.lox.token.ExplicitToken;
 import com.andreychh.lox.token.Token;
-import com.andreychh.lox.token.TokenFromLexeme;
+import com.andreychh.lox.token.TokenType;
 
 /**
  * Represents the initial state of the lexical analysis process.
@@ -67,7 +68,7 @@ public final class InitialState implements LexingState {
         return switch (taken.value()) {
             case " ", "\t", "\n", "\r" -> new InitialState(taken.remaining(), this.result);
             case "(", ")", "{", "}", ".", ",", ";", "+", "-", "*" -> {
-                Token token = new TokenFromLexeme(taken.value(), this.source.position());
+                Token token = new ExplicitToken(this.tokenType(taken.value()), taken.value(), this.source.position());
                 yield new InitialState(taken.remaining(), this.result.withToken(token));
             }
             case "!", "=", ">", "<" -> new CompoundOperatorState(this.source, this.result);
@@ -85,6 +86,30 @@ public final class InitialState implements LexingState {
                 Error error = new Error(message, this.source.position());
                 yield new InitialState(taken.remaining(), this.result.withError(error));
             }
+        };
+    }
+
+    /**
+     * Determines the token type for the given lexeme.
+     *
+     * @param lexeme The operator lexeme to classify
+     * @return The appropriate TokenType
+     */
+    private TokenType tokenType(final String lexeme) {
+        return switch (lexeme) {
+            case "(" -> TokenType.LEFT_PAREN;
+            case ")" -> TokenType.RIGHT_PAREN;
+            case "{" -> TokenType.LEFT_BRACE;
+            case "}" -> TokenType.RIGHT_BRACE;
+            case "." -> TokenType.DOT;
+            case "," -> TokenType.COMMA;
+            case ";" -> TokenType.SEMICOLON;
+            case "+" -> TokenType.PLUS;
+            case "-" -> TokenType.MINUS;
+            case "*" -> TokenType.STAR;
+            default -> throw new IllegalArgumentException(
+                "Cannot determine token type for unexpected lexeme: '%s'".formatted(lexeme)
+            );
         };
     }
 

@@ -4,7 +4,8 @@ import com.andreychh.lox.lexing.LexingResult;
 import com.andreychh.lox.lexing.LexingStep;
 import com.andreychh.lox.source.PatternSource;
 import com.andreychh.lox.source.Source;
-import com.andreychh.lox.token.TokenFromLexeme;
+import com.andreychh.lox.token.ExplicitToken;
+import com.andreychh.lox.token.TokenType;
 
 /**
  * Represents a lexing state for handling slash characters and line comments.
@@ -57,11 +58,11 @@ public final class SlashState implements LexingState {
      */
     private LexingState state() {
         return this.isComment() ? new InitialState(
-                new PatternSource(this.source.skip(2)).take("[^\\n]").remaining(),
-                this.result
+            new PatternSource(this.source.skip(2)).take("[^\\n]").remaining(),
+            this.result
         ) : new InitialState(
-                this.source.skip(1),
-                this.result.withToken(new TokenFromLexeme("/", this.source.position()))
+            this.source.skip(1),
+            this.result.withToken(new ExplicitToken(TokenType.SLASH, "/", this.source.position()))
         );
     }
 
