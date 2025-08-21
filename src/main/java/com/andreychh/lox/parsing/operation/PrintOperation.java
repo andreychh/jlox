@@ -16,7 +16,7 @@ public final class PrintOperation implements Operation<String> {
      */
     @Override
     public String applyToBinary(final Token operator, final Expression left, final Expression right) {
-        return "(%s %s %s)".formatted(operator.format(), left.perform(this), right.perform(this));
+        return "(%s %s %s)".formatted(operator.lexeme(), left.perform(this), right.perform(this));
     }
 
     /**
@@ -32,11 +32,11 @@ public final class PrintOperation implements Operation<String> {
     /**
      * {@inheritDoc}
      * <p>
-     * Formats a literal expression using the token's format.
+     * Formats a literal expression using the token's lexeme.
      */
     @Override
     public String applyToLiteral(final Token literal) {
-        return literal.format();
+        return literal.lexeme();
     }
 
     /**
@@ -46,6 +46,6 @@ public final class PrintOperation implements Operation<String> {
      */
     @Override
     public String applyToUnary(final Token operator, final Expression operand) {
-        return "(%s %s)".formatted(operator.format(), operand.perform(this));
+        return "(%s %s)".formatted(operator.lexeme(), operand.perform(this));
     }
 }
