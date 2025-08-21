@@ -1,8 +1,9 @@
 package com.andreychh.lox.token;
 
-import com.andreychh.lox.Position;
-
 import java.util.Arrays;
+import java.util.Objects;
+
+import com.andreychh.lox.Position;
 
 /**
  * Represents a token with explicitly defined type, lexeme, and position.
@@ -56,5 +57,21 @@ public final class ExplicitToken implements Token {
     @Override
     public String toString() {
         return "ExplicitToken{type=%s, lexeme='%s', position=%s}".formatted(this.type, this.lexeme, this.position);
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (o == null || this.getClass() != o.getClass()) {
+            return false;
+        }
+        ExplicitToken that = (ExplicitToken) o;
+        return this.type == that.type
+            && Objects.equals(this.lexeme, that.lexeme)
+            && Objects.equals(this.position, that.position);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.type, this.lexeme, this.position);
     }
 }
