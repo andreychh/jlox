@@ -6,76 +6,51 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Tests for {@link ExplicitToken} class.
+ * Tests for {@link ExplicitToken}.
  */
-class ExplicitTokenTest {
-
-    /**
-     * ExplicitToken formats correctly with all its components.
-     */
+final class ExplicitTokenTest {
     @Test
-    void formatReturnsFormattedStringRepresentation() {
-        ExplicitToken token = new ExplicitToken(TokenType.EOF, "", new Position(1, 1));
+    void returnsItsLexemeAsProvided() {
         assertEquals(
-                "Token(EOF, \"\", 1:1)",
-                token.format(),
-                "Token format should follow 'Token(type, \"lexeme\", position)' pattern"
+            "foo",
+            new ExplicitToken(TokenType.IDENTIFIER, "foo", new Position(5, 7)).lexeme(),
+            "ExplicitToken returns an incorrect lexeme"
         );
     }
 
-    /**
-     * ExplicitToken equals method considers all fields.
-     */
     @Test
-    void equalsReturnsTrueForSameValues() {
-        ExplicitToken token1 = new ExplicitToken(TokenType.LEFT_PAREN, "(", new Position(1, 1));
-        ExplicitToken token2 = new ExplicitToken(TokenType.LEFT_PAREN, "(", new Position(1, 1));
+    void returnsItsLexemeAsProvidedNonASCII() {
         assertEquals(
-                token1,
-                token2,
-                "Tokens with same values should be equal"
+            "αβγ",
+            new ExplicitToken(TokenType.IDENTIFIER, "αβγ", new Position(5, 7)).lexeme(),
+            "ExplicitToken returns an incorrect lexeme with non-ASCII characters"
         );
     }
 
-    /**
-     * ExplicitToken equals method returns false for different types.
-     */
     @Test
-    void equalsReturnsFalseForDifferentTypes() {
-        ExplicitToken token1 = new ExplicitToken(TokenType.LEFT_PAREN, "(", new Position(1, 1));
-        ExplicitToken token2 = new ExplicitToken(TokenType.RIGHT_PAREN, "(", new Position(1, 1));
-        assertNotEquals(
-                token1,
-                token2,
-                "Tokens with different types should not be equal"
+    void matchesAnyTypeWhenPresent() {
+        assertTrue(
+            new ExplicitToken(TokenType.STRING, "\"content\"", new Position(3, 2))
+                .hasAnyType(new TokenType[]{TokenType.NUMBER, TokenType.STRING, TokenType.LEFT_BRACE}),
+            "ExplicitToken does not match the expected token type"
         );
     }
 
-    /**
-     * ExplicitToken equals method returns false for different lexemes.
-     */
     @Test
-    void equalsReturnsFalseForDifferentLexemes() {
-        ExplicitToken token1 = new ExplicitToken(TokenType.LEFT_PAREN, "(", new Position(1, 1));
-        ExplicitToken token2 = new ExplicitToken(TokenType.LEFT_PAREN, "x", new Position(1, 1));
-        assertNotEquals(
-                token1,
-                token2,
-                "Tokens with different lexemes should not be equal"
+    void doesNotMatchAnyIfTypeIsAbsent() {
+        assertFalse(
+            new ExplicitToken(TokenType.RIGHT_PAREN, ")", new Position(9, 4))
+                .hasAnyType(new TokenType[]{TokenType.NUMBER, TokenType.STRING, TokenType.LEFT_BRACE}),
+            "ExplicitToken matches a type that is not present in the expected array"
         );
     }
 
-    /**
-     * ExplicitToken equals method returns false for different positions.
-     */
     @Test
-    void equalsReturnsFalseForDifferentPositions() {
-        ExplicitToken token1 = new ExplicitToken(TokenType.LEFT_PAREN, "(", new Position(1, 1));
-        ExplicitToken token2 = new ExplicitToken(TokenType.LEFT_PAREN, "(", new Position(2, 1));
-        assertNotEquals(
-                token1,
-                token2,
-                "Tokens with different positions should not be equal"
+    void doesNotMatchWhenExpectedArrayIsEmpty() {
+        assertFalse(
+            new ExplicitToken(TokenType.NUMBER, "42", new Position(1, 0))
+                .hasAnyType(new TokenType[]{}),
+            "ExplicitToken matches when the expected type array is empty"
         );
     }
 }

@@ -3,8 +3,8 @@ package com.andreychh.lox.token;
 /**
  * Enumerates all possible token types in the Lox language.
  * <p>
- * These types categorize tokens into single-character operators, compound
- * operators, literals, keywords, and other special tokens like EOF.
+ * These types categorize tokens into single-character operators, compound operators, literals, keywords, and other
+ * special tokens like EOF.
  */
 public enum TokenType {
     // Single-character tokens.

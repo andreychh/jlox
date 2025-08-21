@@ -1,16 +1,21 @@
 package com.andreychh.lox.token;
 
 /**
- * Defines the contract for lexical tokens in the Lox language.
- * <p>
- * Tokens represent the smallest meaningful units in the source code,
- * such as keywords, identifiers, operators, and literals.
+ * Represents a lexical token in the source code.
  */
 public interface Token {
     /**
-     * Returns a formatted string representation of the token.
+     * Checks if the token's type matches any of the expected types.
      *
-     * @return A string representation of the token
+     * @param expected an array of expected token types
+     * @return {@code true} if the token's type is present in the expected array, otherwise {@code false}
      */
-    String format();
+    boolean hasAnyType(TokenType[] expected);
+
+    /**
+     * Returns the lexeme (textual representation) of this token.
+     *
+     * @return the lexeme of the token
+     */
+    String lexeme();
 }

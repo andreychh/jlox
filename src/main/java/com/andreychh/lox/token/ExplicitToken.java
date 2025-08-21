@@ -1,14 +1,21 @@
 package com.andreychh.lox.token;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 import com.andreychh.lox.Position;
 
 /**
- * A token implementation that explicitly specifies its type.
+ * Represents a token with explicitly defined type, lexeme, and position.
  * <p>
- * This is used for tokens whose type cannot be directly inferred from
- * their lexeme, such as EOF tokens.
+ * It encapsulates the token type, its textual representation (lexeme), and its position in the source code.
+ * <p>
+ * Example usage:
+ * {@snippet :
+ * ExplicitToken token = new ExplicitToken(TokenType.IDENTIFIER, "foo", new Position(1, 5));
+ *}
+ *
+ * @see Token
  */
 public final class ExplicitToken implements Token {
     private final TokenType type;
@@ -16,11 +23,11 @@ public final class ExplicitToken implements Token {
     private final Position position;
 
     /**
-     * Creates a new explicit token.
+     * Constructs a new {@code ExplicitToken} with the specified type, lexeme, and position.
      *
-     * @param type     The token type
-     * @param lexeme   The token's textual representation in the source code
-     * @param position The token's position in the source code
+     * @param type     the type of the token
+     * @param lexeme   the textual representation of the token in the source code
+     * @param position the position of the token in the source code
      */
     public ExplicitToken(final TokenType type, final String lexeme, final Position position) {
         this.type = type;
@@ -32,30 +39,37 @@ public final class ExplicitToken implements Token {
      * {@inheritDoc}
      */
     @Override
-    public String format() {
-        return "Token(%s, \"%s\", %s)".formatted(this.type, this.lexeme, this.position.format());
+    public String lexeme() {
+        return this.lexeme;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        final ExplicitToken that = (ExplicitToken) o;
-        return this.type == that.type
-                && Objects.equals(this.lexeme, that.lexeme)
-                && Objects.equals(this.position, that.position);
+    public boolean hasAnyType(final TokenType[] expected) {
+        return Arrays.asList(expected).contains(this.type);
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
+    public String toString() {
+        return "ExplicitToken{type=%s, lexeme='%s', position=%s}".formatted(this.type, this.lexeme, this.position);
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (o == null || this.getClass() != o.getClass()) {
+            return false;
+        }
+        ExplicitToken that = (ExplicitToken) o;
+        return this.type == that.type
+            && Objects.equals(this.lexeme, that.lexeme)
+            && Objects.equals(this.position, that.position);
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(this.type, this.lexeme, this.position);

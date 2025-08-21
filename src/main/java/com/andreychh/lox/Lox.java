@@ -89,6 +89,6 @@ public final class Lox {
         System.out.println("Errors:");
         result.errors().forEach(e -> System.out.println(e.format()));
         System.out.println("Tokens:");
-        result.tokens().forEach(t -> System.out.println(t.format()));
+        result.tokens().forEach(t -> System.out.println(t.toString()));
     }
 }
