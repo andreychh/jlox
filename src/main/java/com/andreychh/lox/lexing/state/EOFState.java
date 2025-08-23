@@ -1,17 +1,13 @@
 package com.andreychh.lox.lexing.state;
 
 import com.andreychh.lox.lexing.LexingResult;
-import com.andreychh.lox.lexing.LexingStep;
 import com.andreychh.lox.source.Source;
 import com.andreychh.lox.token.ExplicitToken;
 import com.andreychh.lox.token.Token;
 import com.andreychh.lox.token.TokenType;
 
 /**
- * Represents the end-of-file state in the lexical analysis process.
- * <p>
- * This state is reached when the lexer has consumed all input characters. It generates an EOF token and transitions to
- * the terminated state.
+ * Represents the end-of-file state that generates an EOF token and transitions to terminated state.
  */
 public final class EOFState implements LexingState {
     private final Source source;
@@ -29,15 +25,20 @@ public final class EOFState implements LexingState {
     }
 
     /**
-     * {@inheritDoc}
-     * <p>
-     * Adds an EOF token to the result and transitions to the terminated state.
+     * Adds an EOF token and transitions to terminated state.
      */
     @Override
-    public LexingStep next() {
+    public LexingState next() {
         Token token = new ExplicitToken(TokenType.EOF, "", this.source.position());
-        LexingState state = new TerminatedState(this.result.withToken(token));
-        return new LexingStep(state, false);
+        return new TerminatedState(this.result.withToken(token));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isFinal() {
+        return false;
     }
 
     /**

@@ -2,7 +2,6 @@ package com.andreychh.lox.lexing.state;
 
 import com.andreychh.lox.Error;
 import com.andreychh.lox.lexing.LexingResult;
-import com.andreychh.lox.lexing.LexingStep;
 import com.andreychh.lox.source.Fragment;
 import com.andreychh.lox.source.Source;
 import com.andreychh.lox.token.ExplicitToken;
@@ -10,17 +9,15 @@ import com.andreychh.lox.token.Token;
 import com.andreychh.lox.token.TokenType;
 
 /**
- * Represents the initial state of the lexical analysis process.
- * <p>
- * This state is responsible for examining the next character in the source and transitioning to the appropriate
- * specialized state based on the character. It directly handles simple single-character tokens and whitespace.
+ * Represents the entry state that examines characters and dispatches to specialized states or handles simple tokens
+ * directly.
  */
 public final class InitialState implements LexingState {
     private final Source source;
     private final LexingResult result;
 
     /**
-     * Creates a new initial state with the given source and accumulated result.
+     * Creates a new initial state.
      *
      * @param source The source code at the current position
      * @param result The accumulated lexing result
@@ -31,40 +28,20 @@ public final class InitialState implements LexingState {
     }
 
     /**
-     * Creates a new initial state with the given source and an empty result.
-     *
-     * @param source The source code at the starting position
-     */
-    public InitialState(final Source source) {
-        this(source, new LexingResult());
-    }
-
-    /**
-     * {@inheritDoc}
-     * <p>
-     * Examines the next character and transitions to the appropriate state or directly handles simple tokens.
+     * Examines the next character and transitions to the appropriate state.
      */
     @Override
-    public LexingStep next() {
-        return new LexingStep(this.state(), false);
+    public LexingState next() {
+        return this.source.hasNext(1) ? this.dispatch(this.source.take(1)) : new EOFState(this.source, this.result);
     }
 
     /**
-     * Determines the next state based on the current source.
-     *
-     * @return The next lexing state
-     */
-    private LexingState state() {
-        return this.source.hasNext(1) ? this.nextState(this.source.take(1)) : new EOFState(this.source, this.result);
-    }
-
-    /**
-     * Determines the next state based on the taken fragment.
+     * Dispatches to the next state based on the character.
      *
      * @param taken The fragment representing the next character
      * @return The next lexing state
      */
-    private LexingState nextState(final Fragment taken) {
+    private LexingState dispatch(final Fragment taken) {
         return switch (taken.value()) {
             case " ", "\t", "\n", "\r" -> new InitialState(taken.remaining(), this.result);
             case "(", ")", "{", "}", ".", ",", ";", "+", "-", "*" -> {
@@ -92,8 +69,8 @@ public final class InitialState implements LexingState {
     /**
      * Determines the token type for the given lexeme.
      *
-     * @param lexeme The operator lexeme to classify
-     * @return The appropriate TokenType
+     * @param lexeme The single character lexeme
+     * @return The corresponding TokenType
      */
     private TokenType tokenType(final String lexeme) {
         return switch (lexeme) {
@@ -111,6 +88,14 @@ public final class InitialState implements LexingState {
                 "Cannot determine token type for unexpected lexeme: '%s'".formatted(lexeme)
             );
         };
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isFinal() {
+        return false;
     }
 
     /**

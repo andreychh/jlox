@@ -1,7 +1,6 @@
 package com.andreychh.lox.lexing.state;
 
 import com.andreychh.lox.lexing.LexingResult;
-import com.andreychh.lox.lexing.LexingStep;
 import com.andreychh.lox.source.Fragment;
 import com.andreychh.lox.source.Source;
 import com.andreychh.lox.token.ExplicitToken;
@@ -9,22 +8,10 @@ import com.andreychh.lox.token.Token;
 import com.andreychh.lox.token.TokenType;
 
 /**
- * Represents a state that handles operators which can be either single or double character tokens.
- * <p>
- * This state processes ambiguous operators such as '=', '!', '>', and '<', which can be followed by an '=' to form
- * compound operators ('==', '!=', '>=', '<='). It looks ahead by one character to resolve this ambiguity and produces
- * the appropriate token.
- * <p>
- * {@snippet :
- * // Example: parsing '!='
- * Source src = new Source("!=");
- * LexingResult result = new LexingResult();
- * CompoundOperatorState state = new CompoundOperatorState(src, result);
- * LexingStep step = state.next(); // Produces token for '!=' and advances source
- *}
+ * Represents a state that handles ambiguous operators like '=', '!', '>', '<' which can be single or compound ('==',
+ * '!=', '>=', '<=') depending on the following character.
  *
- * @apiNote The state that creates {@code CompoundOperatorState} must guarantee that {@code source.take(1)} returns one
- * of the following: {@code "!"}, {@code "="}, {@code ">"}, or {@code "<"}.
+ * @apiNote Expects {@code source.take(1)} to return one of: "!", "=", ">", "<"
  */
 public final class CompoundOperatorState implements LexingState {
     private final Source source;
@@ -42,17 +29,13 @@ public final class CompoundOperatorState implements LexingState {
     }
 
     /**
-     * {@inheritDoc}
-     * <p>
-     * Examines the next character to determine if it forms a compound operator with the current character and creates
-     * the appropriate token.
+     * Looks ahead to determine if this is a compound operator and creates the appropriate token.
      */
     @Override
-    public LexingStep next() {
+    public LexingState next() {
         Fragment taken = this.takeOperator();
         Token token = new ExplicitToken(this.tokenType(taken.value()), taken.value(), this.source.position());
-        LexingState state = new InitialState(taken.remaining(), this.result.withToken(token));
-        return new LexingStep(state, false);
+        return new InitialState(taken.remaining(), this.result.withToken(token));
     }
 
     /**
@@ -65,7 +48,7 @@ public final class CompoundOperatorState implements LexingState {
     }
 
     /**
-     * Checks if the current operator is a compound operator (e.g., '==', '!=', '>=', '<=').
+     * Checks if the current operator is compound by looking for '=' as the next character.
      *
      * @return {@code true} if the next character is '=', {@code false} otherwise
      */
@@ -93,6 +76,14 @@ public final class CompoundOperatorState implements LexingState {
                 "Cannot determine token type for unexpected lexeme: '%s'".formatted(lexeme)
             );
         };
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isFinal() {
+        return false;
     }
 
     /**

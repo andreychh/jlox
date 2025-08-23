@@ -1,35 +1,23 @@
 package com.andreychh.lox.lexing.state;
 
 import com.andreychh.lox.lexing.LexingResult;
-import com.andreychh.lox.lexing.LexingStep;
 import com.andreychh.lox.source.PatternSource;
 import com.andreychh.lox.source.Source;
 import com.andreychh.lox.token.ExplicitToken;
 import com.andreychh.lox.token.TokenType;
 
 /**
- * Represents a lexing state for handling slash characters and line comments.
- * <p>
- * This state is entered when a '/' character is encountered in the source code.
- * <p>
- * {@snippet :
- * // Creates a slash token for "/"
- * SlashState state = new SlashState(new Source("/"), new LexingResult());
- * LexingStep step = state.next(); // Returns SLASH token
+ * Represents a state that handles slash characters, distinguishing between division operators
+ * and line comments.
  *
- * // Skips line comment for "//"
- * SlashState commentState = new SlashState(new Source("//comment"), new LexingResult());
- * LexingStep commentStep = commentState.next(); // Skips comment, no token created
- *}
- *
- * @apiNote The state that creates {@code SlashState} must guarantee that {@code source.take(1)} returns {@code "/"}.
+ * @apiNote Expects {@code source.take(1)} to return {@code '/'}
  */
 public final class SlashState implements LexingState {
     private final Source source;
     private final LexingResult result;
 
     /**
-     * Creates a new slash state with the given source and accumulated result.
+     * Creates a new slash state.
      *
      * @param source The source code positioned at a slash character
      * @param result The accumulated lexing result
@@ -40,23 +28,10 @@ public final class SlashState implements LexingState {
     }
 
     /**
-     * {@inheritDoc}
-     * <p>
-     * Processes the slash character by examining the following character. If followed by another slash, skips the line
-     * comment until a newline character. Otherwise, creates a division operator token and transitions back to the
-     * initial state.
+     * Creates a SLASH token or skips a line comment based on the following character.
      */
     @Override
-    public LexingStep next() {
-        return new LexingStep(this.state(), false);
-    }
-
-    /**
-     * Determines the next state after processing the slash character.
-     *
-     * @return The next lexing state
-     */
-    private LexingState state() {
+    public LexingState next() {
         return this.isComment() ? new InitialState(
             new PatternSource(this.source.skip(2)).take("[^\\n]").remaining(),
             this.result
@@ -67,12 +42,20 @@ public final class SlashState implements LexingState {
     }
 
     /**
-     * Checks if the slash is the start of a line comment (i.e., "//")
+     * Checks if this is the start of a line comment ("//").
      *
      * @return {@code true} if the next character is also a slash, {@code false} otherwise
      */
     private boolean isComment() {
         return this.source.hasNext(2) && this.source.peek(1).equals("/");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isFinal() {
+        return false;
     }
 
     /**
