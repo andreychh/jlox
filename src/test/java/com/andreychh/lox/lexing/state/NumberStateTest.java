@@ -12,18 +12,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * Tests for {@link NumberState}.
  */
-class NumberStateTest {
+final class NumberStateTest {
     @Test
     void createsNumberTokenFromIntegerLiteral() {
         assertEquals(
             new ExplicitToken(TokenType.NUMBER, "42", new Position(1, 1)),
             new NumberState(new TextSource("42"), new LexingResult())
                 .next()
-                .state()
                 .collectResult()
                 .tokens()
-                .iterator()
-                .next(),
+                .get(0),
             "NumberState does not create number token from integer literal"
         );
     }
@@ -34,11 +32,9 @@ class NumberStateTest {
             new ExplicitToken(TokenType.NUMBER, "042.000", new Position(1, 1)),
             new NumberState(new TextSource("042.000"), new LexingResult())
                 .next()
-                .state()
                 .collectResult()
                 .tokens()
-                .iterator()
-                .next(),
+                .get(0),
             "NumberState incorrectly simplifies the lexeme instead of preserving 042.000"
         );
     }
@@ -49,11 +45,9 @@ class NumberStateTest {
             new ExplicitToken(TokenType.NUMBER, "42.0", new Position(1, 1)),
             new NumberState(new TextSource("42.0"), new LexingResult())
                 .next()
-                .state()
                 .collectResult()
                 .tokens()
-                .iterator()
-                .next(),
+                .get(0),
             "NumberState does not create number token from float literal"
         );
     }
@@ -64,11 +58,9 @@ class NumberStateTest {
             new ExplicitToken(TokenType.NUMBER, "42", new Position(1, 1)),
             new NumberState(new TextSource("42."), new LexingResult())
                 .next()
-                .state()
                 .collectResult()
                 .tokens()
-                .iterator()
-                .next(),
+                .get(0),
             "NumberState does not create number token from integer with trailing dot"
         );
     }
@@ -79,11 +71,9 @@ class NumberStateTest {
             new ExplicitToken(TokenType.NUMBER, "1.2", new Position(1, 1)),
             new NumberState(new TextSource("1.2.3"), new LexingResult())
                 .next()
-                .state()
                 .collectResult()
                 .tokens()
-                .iterator()
-                .next(),
+                .get(0),
             "NumberState does not create number token from input with multiple dots"
         );
     }
@@ -94,11 +84,9 @@ class NumberStateTest {
             new ExplicitToken(TokenType.NUMBER, "1", new Position(1, 1)),
             new NumberState(new TextSource("1..2.3"), new LexingResult())
                 .next()
-                .state()
                 .collectResult()
                 .tokens()
-                .iterator()
-                .next(),
+                .get(0),
             "NumberState does not create number token from input with double dots"
         );
     }

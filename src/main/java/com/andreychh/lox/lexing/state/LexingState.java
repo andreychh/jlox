@@ -16,7 +16,7 @@ public interface LexingState {
      * Transitions to the next state.
      *
      * @return The next state
-     * @throws IllegalStateException if called on a final state
+     * @throws IllegalTransitionException if called on a final state
      */
     LexingState next();
 

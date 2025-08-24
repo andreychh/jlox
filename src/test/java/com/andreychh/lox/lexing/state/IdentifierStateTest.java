@@ -17,24 +17,22 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * Tests for {@link IdentifierState}.
  */
-class IdentifierStateTest {
+final class IdentifierStateTest {
     @ParameterizedTest
-    @MethodSource("keywordToTokenType")
+    @MethodSource("keywordCases")
     void recognizesKeyword(String keyword, TokenType type) {
         assertEquals(
             new ExplicitToken(type, keyword, new Position(1, 1)),
             new IdentifierState(new TextSource(keyword), new LexingResult())
                 .next()
-                .state()
                 .collectResult()
                 .tokens()
-                .iterator()
-                .next(),
+                .get(0),
             "IdentifierState failed to recognize '%s' as %s token".formatted(keyword, type)
         );
     }
 
-    static Stream<Arguments> keywordToTokenType() {
+    static Stream<Arguments> keywordCases() {
         return Stream.of(
             Arguments.of("and", TokenType.AND),
             Arguments.of("class", TokenType.CLASS),
@@ -61,11 +59,9 @@ class IdentifierStateTest {
             new ExplicitToken(TokenType.VAR, "var", new Position(1, 1)),
             new IdentifierState(new TextSource("var("), new LexingResult())
                 .next()
-                .state()
                 .collectResult()
                 .tokens()
-                .iterator()
-                .next(),
+                .get(0),
             "IdentifierState failed to stop parsing at non-alphanumeric character"
         );
     }
@@ -76,11 +72,9 @@ class IdentifierStateTest {
             new ExplicitToken(TokenType.IDENTIFIER, "var123", new Position(1, 1)),
             new IdentifierState(new TextSource("var123"), new LexingResult())
                 .next()
-                .state()
                 .collectResult()
                 .tokens()
-                .iterator()
-                .next(),
+                .get(0),
             "IdentifierState failed to create identifier token containing numbers"
         );
     }
@@ -91,11 +85,9 @@ class IdentifierStateTest {
             new ExplicitToken(TokenType.IDENTIFIER, "_var", new Position(1, 1)),
             new IdentifierState(new TextSource("_var"), new LexingResult())
                 .next()
-                .state()
                 .collectResult()
                 .tokens()
-                .iterator()
-                .next(),
+                .get(0),
             "IdentifierState failed to create identifier token starting with underscore"
         );
     }
@@ -106,11 +98,9 @@ class IdentifierStateTest {
             new ExplicitToken(TokenType.IDENTIFIER, "a", new Position(1, 1)),
             new IdentifierState(new TextSource("a"), new LexingResult())
                 .next()
-                .state()
                 .collectResult()
                 .tokens()
-                .iterator()
-                .next(),
+                .get(0),
             "IdentifierState failed to create single-letter identifier token"
         );
     }
@@ -121,11 +111,9 @@ class IdentifierStateTest {
             new ExplicitToken(TokenType.IDENTIFIER, "VAR", new Position(1, 1)),
             new IdentifierState(new TextSource("VAR"), new LexingResult())
                 .next()
-                .state()
                 .collectResult()
                 .tokens()
-                .iterator()
-                .next(),
+                .get(0),
             "IdentifierState incorrectly recognized uppercase 'VAR' as keyword instead of identifier"
         );
     }
@@ -136,11 +124,9 @@ class IdentifierStateTest {
             new ExplicitToken(TokenType.IDENTIFIER, "Variable", new Position(1, 1)),
             new IdentifierState(new TextSource("Variable"), new LexingResult())
                 .next()
-                .state()
                 .collectResult()
                 .tokens()
-                .iterator()
-                .next(),
+                .get(0),
             "IdentifierState incorrectly recognized capitalized 'Variable' as keyword instead of identifier"
         );
     }
