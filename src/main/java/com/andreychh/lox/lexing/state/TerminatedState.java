@@ -1,19 +1,15 @@
 package com.andreychh.lox.lexing.state;
 
 import com.andreychh.lox.lexing.LexingResult;
-import com.andreychh.lox.lexing.LexingStep;
 
 /**
- * Represents the final state of the lexical analysis process.
- * <p>
- * Once the lexer reaches this state, it indicates that the analysis is complete and no further processing should occur.
- * This state always signals that the FSM should terminate when asked for the next step.
+ * Represents the final state indicating that lexical analysis is complete.
  */
 public final class TerminatedState implements LexingState {
     private final LexingResult result;
 
     /**
-     * Creates a new terminated state with the final lexing result.
+     * Creates a new terminated state with the final result.
      *
      * @param result The final accumulated lexing result
      */
@@ -22,18 +18,20 @@ public final class TerminatedState implements LexingState {
     }
 
     /**
-     * {@inheritDoc}
-     * <p>
-     * Always returns a step with the isFinal flag set to {@code true}, indicating that the lexer should terminate.
+     * Throws an exception since this is a final state.
+     *
+     * @throws IllegalStateException always, as this state should not transition
      */
     @Override
-    public LexingStep next() {
-        return new LexingStep(this, true);
+    public LexingState next() {
+        throw new IllegalTransitionException("Cannot transition from final state");
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
+    public boolean isFinal() {
+        return true;
+    }
+
     @Override
     public LexingResult collectResult() {
         return this.result;

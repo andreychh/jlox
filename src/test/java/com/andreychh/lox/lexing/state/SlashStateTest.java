@@ -8,23 +8,21 @@ import com.andreychh.lox.token.TokenType;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests for {@link SlashState}.
  */
-class SlashStateTest {
+final class SlashStateTest {
     @Test
     void createsSlashTokenWhenFollowedBySpace() {
         assertEquals(
             new ExplicitToken(TokenType.SLASH, "/", new Position(1, 1)),
             new SlashState(new TextSource("/ "), new LexingResult())
                 .next()
-                .state()
                 .collectResult()
                 .tokens()
-                .iterator()
-                .next(),
+                .get(0),
             "SlashState failed to create slash token when followed by space"
         );
     }
@@ -35,67 +33,57 @@ class SlashStateTest {
             new ExplicitToken(TokenType.SLASH, "/", new Position(1, 1)),
             new SlashState(new TextSource("/"), new LexingResult())
                 .next()
-                .state()
                 .collectResult()
                 .tokens()
-                .iterator()
-                .next(),
+                .get(0),
             "SlashState failed to create slash token when at end of source"
         );
     }
 
     @Test
     void skipsCommentWithoutCreatingToken() {
-        assertFalse(
+        assertTrue(
             new SlashState(new TextSource("//comment"), new LexingResult())
                 .next()
-                .state()
                 .collectResult()
                 .tokens()
-                .iterator()
-                .hasNext(),
+                .isEmpty(),
             "SlashState should not create token when processing line comment"
         );
     }
 
     @Test
     void skipsCommentUntilNewline() {
-        assertFalse(
+        assertTrue(
             new SlashState(new TextSource("//comment\n"), new LexingResult())
                 .next()
-                .state()
                 .collectResult()
                 .tokens()
-                .iterator()
-                .hasNext(),
+                .isEmpty(),
             "SlashState should not create token when processing line comment ending with newline"
         );
     }
 
     @Test
     void handlesDoubleSlashAtEndOfSource() {
-        assertFalse(
+        assertTrue(
             new SlashState(new TextSource("//"), new LexingResult())
                 .next()
-                .state()
                 .collectResult()
                 .tokens()
-                .iterator()
-                .hasNext(),
+                .isEmpty(),
             "SlashState should not create token for double slash at end of source"
         );
     }
 
     @Test
     void handlesDoubleSlashFollowedByNewline() {
-        assertFalse(
+        assertTrue(
             new SlashState(new TextSource("//\n"), new LexingResult())
                 .next()
-                .state()
                 .collectResult()
                 .tokens()
-                .iterator()
-                .hasNext(),
+                .isEmpty(),
             "SlashState should not create token for double slash followed immediately by newline"
         );
     }

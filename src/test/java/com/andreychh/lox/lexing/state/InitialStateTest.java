@@ -1,126 +1,94 @@
 package com.andreychh.lox.lexing.state;
 
-import com.andreychh.lox.Error;
 import com.andreychh.lox.Position;
 import com.andreychh.lox.lexing.LexingResult;
-import com.andreychh.lox.lexing.LexingStep;
 import com.andreychh.lox.source.TextSource;
 import com.andreychh.lox.token.ExplicitToken;
-import com.andreychh.lox.token.Token;
 import com.andreychh.lox.token.TokenType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
-class InitialStateTest {
+/**
+ * Tests for {@link InitialState}.
+ */
+final class InitialStateTest {
+    @ParameterizedTest
+    @MethodSource("singleCharOperatorCases")
+    void createsTokenForSingleCharacterOperator(String operator, TokenType expectedType) {
+        assertEquals(
+            new ExplicitToken(expectedType, operator, new Position(1, 1)),
+            new InitialState(new TextSource(operator), new LexingResult())
+                .next()
+                .collectResult()
+                .tokens()
+                .get(0),
+            "InitialState did not create correct token for single char operator"
+        );
+    }
+
+    static Stream<Arguments> singleCharOperatorCases() {
+        return Stream.of(
+            Arguments.of("(", TokenType.LEFT_PAREN),
+            Arguments.of(")", TokenType.RIGHT_PAREN),
+            Arguments.of("{", TokenType.LEFT_BRACE),
+            Arguments.of("}", TokenType.RIGHT_BRACE),
+            Arguments.of(".", TokenType.DOT),
+            Arguments.of(",", TokenType.COMMA),
+            Arguments.of(";", TokenType.SEMICOLON),
+            Arguments.of("+", TokenType.PLUS),
+            Arguments.of("-", TokenType.MINUS),
+            Arguments.of("*", TokenType.STAR)
+        );
+    }
+
     @Test
-    void shouldTransitionToEOFStateOnEmptySource() {
-        LexingState state = new InitialState(new TextSource(""));
-
-        LexingStep step = state.next();
-        assertFalse(step.isFinal());
-        assertInstanceOf(EOFState.class, step.state());
+    void transitionsToEOFStateWhenSourceIsEmpty() {
+        assertInstanceOf(
+            EOFState.class,
+            new InitialState(new TextSource(""), new LexingResult()).next(),
+            "InitialState did not transition to EOFState on empty source"
+        );
     }
 
     @ParameterizedTest
     @ValueSource(strings = {" ", "\t", "\n", "\r"})
-    void shouldSkipWhitespaceAndRemainInInitialState(String whitespace) {
-        LexingState state = new InitialState(new TextSource(whitespace + "a"));
-
-        LexingStep step = state.next();
-        assertFalse(step.isFinal());
-        assertInstanceOf(InitialState.class, step.state());
-
-        LexingResult result = step.state().collectResult();
-
-        List<Token> tokens = this.toList(result.tokens());
-        assertTrue(tokens.isEmpty());
-
-        List<Error> errors = this.toList(result.errors());
-        assertTrue(errors.isEmpty());
+    void remainsInInitialStateAfterWhitespace(String whitespace) {
+        assertInstanceOf(
+            InitialState.class,
+            new InitialState(new TextSource(whitespace + "a"), new LexingResult()).next(),
+            "InitialState did not remain in InitialState after skipping whitespace"
+        );
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = {"(", ")", "{", "}", ".", ",", ";", "+", "-", "*"})
-    void shouldCreateTokenForSingleCharOperators(String operator) {
-        LexingState state = new InitialState(new TextSource(operator));
-        Token expectedToken = new ExplicitToken(tokenType(operator), operator, new Position(1, 1));
-
-        LexingStep step = state.next();
-        assertFalse(step.isFinal());
-        assertInstanceOf(InitialState.class, step.state());
-
-        LexingResult result = step.state().collectResult();
-
-        List<Token> tokens = this.toList(result.tokens());
-        assertEquals(1, tokens.size());
-        assertEquals(expectedToken, tokens.getFirst());
-
-        List<Error> errors = this.toList(result.errors());
-        assertTrue(errors.isEmpty());
-    }
-
-    TokenType tokenType(final String lexeme) {
-        return switch (lexeme) {
-            case "(" -> TokenType.LEFT_PAREN;
-            case ")" -> TokenType.RIGHT_PAREN;
-            case "{" -> TokenType.LEFT_BRACE;
-            case "}" -> TokenType.RIGHT_BRACE;
-            case "." -> TokenType.DOT;
-            case "," -> TokenType.COMMA;
-            case ";" -> TokenType.SEMICOLON;
-            case "+" -> TokenType.PLUS;
-            case "-" -> TokenType.MINUS;
-            case "*" -> TokenType.STAR;
-            default -> throw new IllegalArgumentException(
-                "Cannot determine token type for unexpected lexeme: '%s'".formatted(lexeme)
-            );
-        };
-    }
 
     @ParameterizedTest
     @ValueSource(strings = {"!", "=", ">", "<"})
-    void shouldTransitionToCompoundOperatorState(String operatorStart) {
-        LexingState state = new InitialState(new TextSource(operatorStart));
-
-        LexingStep step = state.next();
-        assertFalse(step.isFinal());
-        assertInstanceOf(CompoundOperatorState.class, step.state());
-
-        LexingResult result = step.state().collectResult();
-
-        List<Token> tokens = this.toList(result.tokens());
-        assertTrue(tokens.isEmpty());
-
-        List<Error> errors = this.toList(result.errors());
-        assertTrue(errors.isEmpty());
+    void transitionsToCompoundOperatorStateForCompoundOperatorStart(String operatorStart) {
+        assertInstanceOf(
+            CompoundOperatorState.class,
+            new InitialState(new TextSource(operatorStart), new LexingResult()).next(),
+            "InitialState did not transition to CompoundOperatorState for compound operator start"
+        );
     }
 
     @Test
-    void shouldAddErrorAndSkipUnexpectedCharacter() {
-        LexingState state = new InitialState(new TextSource("?a"));
-
-        LexingStep step = state.next();
-        assertFalse(step.isFinal());
-        assertInstanceOf(InitialState.class, step.state());
-
-        LexingResult result = step.state().collectResult();
-
-        List<Token> tokens = this.toList(result.tokens());
-        assertTrue(tokens.isEmpty());
-
-        List<Error> errors = this.toList(result.errors());
-        assertEquals(1, errors.size());
-    }
-
-    private <T> List<T> toList(final Iterable<T> iterable) {
-        List<T> list = new ArrayList<>();
-        iterable.forEach(list::add);
-        return list;
+    void addsErrorAndSkipsUnexpectedCharacter() {
+        assertEquals(
+            1,
+            new InitialState(new TextSource("?a"), new LexingResult())
+                .next()
+                .collectResult()
+                .errors()
+                .size(),
+            "InitialState did not add error for unexpected character"
+        );
     }
 }

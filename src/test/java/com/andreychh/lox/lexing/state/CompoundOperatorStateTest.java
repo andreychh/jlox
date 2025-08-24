@@ -1,81 +1,100 @@
 package com.andreychh.lox.lexing.state;
 
-import com.andreychh.lox.Error;
 import com.andreychh.lox.Position;
 import com.andreychh.lox.lexing.LexingResult;
-import com.andreychh.lox.lexing.LexingStep;
 import com.andreychh.lox.source.TextSource;
 import com.andreychh.lox.token.ExplicitToken;
-import com.andreychh.lox.token.Token;
 import com.andreychh.lox.token.TokenType;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class CompoundOperatorStateTest {
-    @Test
-    void shouldCreateCompoundTokenWhenFollowedByEquals() {
-        LexingState state = new CompoundOperatorState(new TextSource("!="), new LexingResult());
-        Token expectedToken = new ExplicitToken(TokenType.BANG_EQUAL, "!=", new Position(1, 1));
+/**
+ * Tests for {@link CompoundOperatorState}.
+ */
+final class CompoundOperatorStateTest {
+    @ParameterizedTest()
+    @MethodSource("compoundOperatorCases")
+    void createsCompoundToken(String input, TokenType expectedType) {
+        assertEquals(
+            new ExplicitToken(expectedType, input, new Position(1, 1)),
+            new CompoundOperatorState(new TextSource(input), new LexingResult())
+                .next()
+                .collectResult()
+                .tokens()
+                .get(0),
+            "CompoundOperatorState failed to create compound token"
+        );
+    }
 
-        LexingStep step = state.next();
-        assertFalse(step.isFinal());
-        assertInstanceOf(InitialState.class, step.state());
+    static Stream<Arguments> compoundOperatorCases() {
+        return Stream.of(
+            Arguments.of("==", TokenType.EQUAL_EQUAL),
+            Arguments.of("!=", TokenType.BANG_EQUAL),
+            Arguments.of(">=", TokenType.GREATER_EQUAL),
+            Arguments.of("<=", TokenType.LESS_EQUAL)
+        );
+    }
 
-        LexingResult result = step.state().collectResult();
+    @ParameterizedTest()
+    @MethodSource("singleOperatorWithTailCases")
+    void createsSingleTokenWhenFollowedByAnotherChar(String input, TokenType expectedType) {
+        assertEquals(
+            new ExplicitToken(expectedType, input.substring(0, 1), new Position(1, 1)),
+            new CompoundOperatorState(new TextSource(input), new LexingResult())
+                .next()
+                .collectResult()
+                .tokens()
+                .get(0),
+            "CompoundOperatorState failed to create single token followed by another char"
+        );
+    }
 
-        List<Token> tokens = this.toList(result.tokens());
-        assertEquals(1, tokens.size());
-        assertEquals(expectedToken, tokens.getFirst());
+    static Stream<Arguments> singleOperatorWithTailCases() {
+        return Stream.of(
+            Arguments.of("!a", TokenType.BANG),
+            Arguments.of(">d", TokenType.GREATER),
+            Arguments.of("<c", TokenType.LESS),
+            Arguments.of("=d", TokenType.EQUAL)
+        );
+    }
 
-        List<Error> errors = this.toList(result.errors());
-        assertEquals(0, errors.size());
+    @ParameterizedTest()
+    @MethodSource("singleOperatorAtEndCases")
+    void createsSingleTokenAtEndOfSource(String input, TokenType expectedType) {
+        assertEquals(
+            new ExplicitToken(expectedType, input, new Position(1, 1)),
+            new CompoundOperatorState(new TextSource(input), new LexingResult())
+                .next()
+                .collectResult()
+                .tokens()
+                .get(0),
+            "CompoundOperatorState failed to create single token at end of source"
+        );
+    }
+
+    static Stream<Arguments> singleOperatorAtEndCases() {
+        return Stream.of(
+            Arguments.of("!", TokenType.BANG),
+            Arguments.of(">", TokenType.GREATER),
+            Arguments.of("<", TokenType.LESS),
+            Arguments.of("=", TokenType.EQUAL)
+        );
     }
 
     @Test
-    void shouldCreateSingleTokenWhenNotFollowedByEquals() {
-        LexingState state = new CompoundOperatorState(new TextSource("!a"), new LexingResult());
-        Token expectedToken = new ExplicitToken(TokenType.BANG, "!", new Position(1, 1));
-
-        LexingStep step = state.next();
-        assertFalse(step.isFinal());
-        assertInstanceOf(InitialState.class, step.state());
-
-        LexingResult result = step.state().collectResult();
-
-        List<Token> tokens = this.toList(result.tokens());
-        assertEquals(1, tokens.size());
-        assertEquals(expectedToken, tokens.getFirst());
-
-        List<Error> errors = this.toList(result.errors());
-        assertEquals(0, errors.size());
-    }
-
-    @Test
-    void shouldCreateSingleTokenWhenItIsTheLastCharInSource() {
-        LexingState state = new CompoundOperatorState(new TextSource("!"), new LexingResult());
-        Token expectedToken = new ExplicitToken(TokenType.BANG, "!", new Position(1, 1));
-
-        LexingStep step = state.next();
-        assertFalse(step.isFinal());
-        assertInstanceOf(InitialState.class, step.state());
-
-        LexingResult result = step.state().collectResult();
-
-        List<Token> tokens = this.toList(result.tokens());
-        assertEquals(1, tokens.size());
-        assertEquals(expectedToken, tokens.getFirst());
-
-        List<Error> errors = this.toList(result.errors());
-        assertTrue(errors.isEmpty());
-    }
-
-    private <T> List<T> toList(final Iterable<T> iterable) {
-        List<T> list = new ArrayList<>();
-        iterable.forEach(list::add);
-        return list;
+    void throwsExceptionWhenUnknownLexemeIsProvided() {
+        assertThrows(
+            IllegalArgumentException.class,
+            () -> new CompoundOperatorState(new TextSource("?"), new LexingResult())
+                .next(),
+            "CompoundOperatorState does not throw IllegalArgumentException for unknown lexeme"
+        );
     }
 }

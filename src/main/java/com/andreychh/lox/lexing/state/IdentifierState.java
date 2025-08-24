@@ -1,7 +1,6 @@
 package com.andreychh.lox.lexing.state;
 
 import com.andreychh.lox.lexing.LexingResult;
-import com.andreychh.lox.lexing.LexingStep;
 import com.andreychh.lox.source.Fragment;
 import com.andreychh.lox.source.PatternSource;
 import com.andreychh.lox.source.Source;
@@ -10,34 +9,17 @@ import com.andreychh.lox.token.Token;
 import com.andreychh.lox.token.TokenType;
 
 /**
- * Represents a lexing state for processing identifiers and keywords.
- * <p>
- * This state is responsible for consuming a sequence of alphanumeric characters and underscores, and for producing
- * either an identifier or a keyword token.
- * <p>
- * {@snippet :
- * // Creates an identifier token for "variable"
- * IdentifierState state = new IdentifierState(new Source("variable"), new LexingResult());
- * LexingStep step = state.next(); // Returns IDENTIFIER token
+ * Represents a state that processes identifiers and keywords by consuming alphanumeric
+ * characters and underscores.
  *
- * // Creates a keyword token for "while"
- * IdentifierState keywordState = new IdentifierState(new Source("while"), new LexingResult());
- * LexingStep keywordStep = keywordState.next(); // Returns WHILE token
- *
- * // Creates an identifier token for "_private"
- * IdentifierState underscoreState = new IdentifierState(new Source("_private"), new LexingResult());
- * LexingStep underscoreStep = underscoreState.next(); // Returns IDENTIFIER token
- *}
- *
- * @implNote The state that creates {@code IdentifierState} must guarantee that {@code source.take(1)} returns a letter
- * or underscore character.
+ * @implNote Expects {@code source.take(1)} to return a letter or underscore
  */
 public final class IdentifierState implements LexingState {
     private final Source source;
     private final LexingResult result;
 
     /**
-     * Creates a new identifier state with the given source and accumulated result.
+     * Creates a new identifier state.
      *
      * @param source The source code positioned at an identifier start character
      * @param result The accumulated lexing result
@@ -48,17 +30,13 @@ public final class IdentifierState implements LexingState {
     }
 
     /**
-     * {@inheritDoc}
-     * <p>
-     * Processes the identifier by consuming consecutive alphanumeric characters and underscores. Determines whether the
-     * resulting lexeme is a reserved keyword or a regular identifier, then creates the appropriate token type.
+     * Consumes the identifier and creates the appropriate token (keyword or identifier).
      */
     @Override
-    public LexingStep next() {
+    public LexingState next() {
         Fragment taken = new PatternSource(this.source).take("[0-9a-zA-Z_]");
         Token token = new ExplicitToken(this.tokenType(taken.value()), taken.value(), this.source.position());
-        LexingState state = new InitialState(taken.remaining(), this.result.withToken(token));
-        return new LexingStep(state, false);
+        return new InitialState(taken.remaining(), this.result.withToken(token));
     }
 
     /**
@@ -87,6 +65,14 @@ public final class IdentifierState implements LexingState {
             case "while" -> TokenType.WHILE;
             default -> TokenType.IDENTIFIER;
         };
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isFinal() {
+        return false;
     }
 
     /**
