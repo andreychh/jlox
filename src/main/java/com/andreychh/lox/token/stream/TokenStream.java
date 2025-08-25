@@ -31,9 +31,9 @@ public interface TokenStream {
      * stream.
      *
      * @param count the number of tokens to consume
-     * @return a {@link Fragment} with consumed tokens and the remaining stream
+     * @return a {@link ConsumptionResult} with consumed tokens and the remaining stream
      */
-    Fragment consume(int count);
+    ConsumptionResult consume(int count);
 
     /**
      * Returns a new stream advanced by the specified number of tokens.
