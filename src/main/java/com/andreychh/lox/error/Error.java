@@ -1,4 +1,6 @@
-package com.andreychh.lox;
+package com.andreychh.lox.error;
+
+import com.andreychh.lox.Position;
 
 /**
  * Represents an error encountered during lexical analysis.

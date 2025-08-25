@@ -1,7 +1,7 @@
 package com.andreychh.lox.lexing;
 
-import com.andreychh.lox.Error;
 import com.andreychh.lox.Position;
+import com.andreychh.lox.error.Error;
 import com.andreychh.lox.source.TextSource;
 import com.andreychh.lox.token.ExplicitToken;
 import com.andreychh.lox.token.Token;

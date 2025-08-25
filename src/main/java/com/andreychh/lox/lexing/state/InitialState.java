@@ -1,6 +1,6 @@
 package com.andreychh.lox.lexing.state;
 
-import com.andreychh.lox.Error;
+import com.andreychh.lox.error.Error;
 import com.andreychh.lox.lexing.LexingResult;
 import com.andreychh.lox.source.Fragment;
 import com.andreychh.lox.source.Source;
