@@ -62,8 +62,8 @@ public final class ListTokenStream implements TokenStream {
      * {@inheritDoc}
      */
     @Override
-    public Fragment consume(final int count) {
-        return new Fragment(this.tokens.subList(this.offset, this.offset + count), this.advance(count));
+    public ConsumptionResult consume(final int count) {
+        return new ConsumptionResult(this.tokens.subList(this.offset, this.offset + count), this.advance(count));
     }
 
     /**

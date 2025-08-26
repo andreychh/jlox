@@ -3,7 +3,7 @@ package com.andreychh.lox.lexing;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.andreychh.lox.Error;
+import com.andreychh.lox.error.Error;
 import com.andreychh.lox.token.Token;
 
 /**
